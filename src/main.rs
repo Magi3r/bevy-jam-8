@@ -8,11 +8,18 @@ mod audio;
 mod demo;
 #[cfg(feature = "dev")]
 mod dev_tools;
+mod game;
 mod menus;
 mod screens;
 mod theme;
 
-use bevy::{asset::AssetMetaCheck, prelude::*};
+use bevy::{
+    asset::AssetMetaCheck,
+    camera::ScalingMode,
+    prelude::*,
+    render::view::{DebandDither, Tonemapping},
+    window::WindowResolution,
+};
 
 fn main() -> AppExit {
     App::new().add_plugins(AppPlugin).run()
@@ -36,6 +43,7 @@ impl Plugin for AppPlugin {
                     primary_window: Window {
                         title: "Bevy Jam 8".to_string(),
                         fit_canvas_to_parent: true,
+                        resolution: WindowResolution::new(1920, 1080),
                         ..default()
                     }
                     .into(),
@@ -47,7 +55,8 @@ impl Plugin for AppPlugin {
         app.add_plugins((
             asset_tracking::plugin,
             audio::plugin,
-            demo::plugin,
+            // demo::plugin,
+            game::plugin,
             #[cfg(feature = "dev")]
             dev_tools::plugin,
             menus::plugin,
@@ -97,8 +106,16 @@ struct Pause(pub bool);
 struct PausableSystems;
 
 fn spawn_camera() -> impl Scene {
+    // Camera { viewport: todo!(), order: todo!(), is_active: todo!(), computed: todo!(), output_mode: todo!(), msaa_writeback: todo!(), clear_color: todo!(), invert_culling: todo!(), sub_camera_view: todo!() };
     bsn! {
         #Camera
         Camera2d
+        // Tonemapping::None
+        // DebandDither::Disabled
+
+        // CompositingSpace::Srgb
+        Camera {
+            clear_color: ClearColorConfig::None
+        }
     }
 }

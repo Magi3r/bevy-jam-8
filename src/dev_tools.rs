@@ -1,15 +1,21 @@
 //! Development tools for the game. This plugin is only enabled in dev builds.
 
 use bevy::{
-    dev_tools::states::log_transitions, input::common_conditions::input_just_pressed, prelude::*,
+    dev_tools::states::log_transitions,
+    input::common_conditions::{input_just_pressed, input_toggle_active},
+    prelude::*,
 };
+use bevy_inspector_egui::{bevy_egui::EguiPlugin, quick::WorldInspectorPlugin};
 
 use crate::screens::Screen;
 
 pub(super) fn plugin(app: &mut App) {
     // Log `Screen` state transitions.
     app.add_systems(Update, log_transitions::<Screen>);
-
+    app.add_plugins((
+        EguiPlugin::default(),
+        WorldInspectorPlugin::new().run_if(input_toggle_active(false, TOGGLE_KEY)),
+    ));
     // Toggle the debug overlay for UI.
     app.add_systems(
         Update,
@@ -17,7 +23,7 @@ pub(super) fn plugin(app: &mut App) {
     );
 }
 
-const TOGGLE_KEY: KeyCode = KeyCode::Backquote;
+const TOGGLE_KEY: KeyCode = KeyCode::Backspace;
 
 fn toggle_debug_ui(mut options: ResMut<GlobalUiDebugOptions>) {
     options.toggle();
