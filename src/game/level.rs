@@ -3,10 +3,7 @@
 use bevy::prelude::*;
 
 use crate::{
-    asset_tracking::LoadResource,
-    audio::music,
-    game::tooltip,
-    screens::{Screen, gameplay::storefront::storefront_scene},
+    asset_tracking::LoadResource, audio::music, game::{animation::transition_scene, tooltip}, screens::{Screen, gameplay::{ShopArea::{CookingArea, Storefront}, storefront::storefront_scene}},
 };
 
 pub(super) fn plugin(app: &mut App) {
@@ -36,6 +33,12 @@ pub struct LevelAssets {
     pub cauldron: Handle<Image>,
     #[dependency]
     pub fire: Vec<Handle<Image>>,
+    #[dependency]
+    pub transition_animation: Vec<Handle<Image>>,
+    #[dependency]
+    pub mortar_highlight: Handle<Image>,
+    #[dependency]
+    pub fire_highlight: Handle<Image>,
 }
 
 impl FromWorld for LevelAssets {
@@ -70,7 +73,23 @@ impl FromWorld for LevelAssets {
                 assets.load("images/foreground/Fire0003.png"),
                 assets.load("images/foreground/Fire0002.png"),
             ],
+            fire_highlight: assets.load("images/highlight/Fire.png"),
             mortar: assets.load("images/foreground/Mortar.png"),
+            mortar_highlight: assets.load("images/highlight/Mortar.png"),
+            transition_animation: vec![
+                assets.load("images/animation/transition0001.png"),
+                assets.load("images/animation/transition0002.png"),
+                assets.load("images/animation/transition0003.png"),
+                assets.load("images/animation/transition0004.png"),
+                assets.load("images/animation/transition0005.png"),
+                assets.load("images/animation/transition0006.png"),
+                assets.load("images/animation/transition0007.png"),
+                assets.load("images/animation/transition0008.png"),
+                assets.load("images/animation/transition0009.png"),
+                assets.load("images/animation/transition0010.png"),
+                assets.load("images/animation/transition0011.png"),
+                assets.load("images/animation/transition0012.png"),
+            ],
         }
     }
 }
@@ -91,7 +110,8 @@ pub fn spawn_level(
         DespawnOnExit<Screen>(Screen::Gameplay)
         Children [
             // @cooking_area_scene(&level_assets)
-            @storefront_scene(&level_assets)
+            // @storefront_scene(&level_assets)
+            @transition_scene(true, Storefront, &level_assets)
 
             --
             #GameplayMusic

@@ -9,7 +9,7 @@ use crate::{
 const TOOLTIP_OFFSET: Vec2 = Vec2::new(15.0, 15.0);
 
 mod alchemy;
-mod animation;
+pub mod animation;
 pub mod level;
 
 pub(super) fn plugin(app: &mut App) {

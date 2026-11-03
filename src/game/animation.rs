@@ -7,28 +7,29 @@
 use bevy::prelude::*;
 use std::time::Duration;
 
-use crate::{AppSystems, PausableSystems, game::level::LevelAssets};
+use crate::{AppSystems, PausableSystems, game::level::LevelAssets, screens::gameplay::ShopArea};
 
 pub(super) fn plugin(app: &mut App) {
     // Animate and play sound effects based on controls.
     app.add_systems(
         Update,
         (
-            update_animation_timer.in_set(AppSystems::TickTimers),
+            (update_fire_animation_timer,update_transition_animation_timer).in_set(AppSystems::TickTimers),
             (
                 // update_animation_movement,
-                update_animation_atlas,
+                update_fire_animation_sprite.run_if(in_state(ShopArea::CookingArea)),
+                update_transition_animation_sprite.run_if(in_state(ShopArea::TransitionAnimation)),
                 // trigger_step_sound_effect,
             )
-                .chain()
                 .in_set(AppSystems::Update),
         )
             .in_set(PausableSystems),
     );
+    app.add_systems(Update, next_state_when_transition_finished.run_if(in_state(ShopArea::TransitionAnimation)));
 }
 
 /// Update the animation timer.
-fn update_animation_timer(time: Res<Time>, mut query: Query<&mut FireAnimation>) {
+fn update_fire_animation_timer(time: Res<Time>, mut query: Query<&mut FireAnimation>) {
     for mut animation in &mut query {
         animation.update_timer(time.delta());
     }
@@ -67,11 +68,92 @@ impl FireAnimation {
     }
 }
 
-/// Update the texture atlas to reflect changes in the animation.
-fn update_animation_atlas(mut query: Query<(&FireAnimation, &mut Sprite)>, level_assets: If<Res<LevelAssets>>) {
+/// Update the texture to reflect changes in the animation.
+fn update_fire_animation_sprite(mut query: Query<(&FireAnimation, &mut Sprite)>, level_assets: If<Res<LevelAssets>>) {
     for (animation, mut sprite) in &mut query {
         if animation.changed() {
             sprite.image = level_assets.fire.get(animation.frame).unwrap().clone();
+        }
+    }
+}
+
+pub fn transition_scene(left_to_right: bool, next_state: ShopArea, level_assets: &LevelAssets) -> impl Scene {
+    let transition = TransitionAnimation::new(left_to_right, next_state);
+    bsn! {
+        #TransitionAnimation
+        transition
+        DespawnOnExit<ShopArea>(ShopArea::TransitionAnimation)
+        Sprite {image: {level_assets.transition_animation.get(transition.frame).unwrap().clone()}}
+    }
+}
+
+/// Update the animation timer.
+fn update_transition_animation_timer(time: Res<Time>, mut query: Query<&mut TransitionAnimation>) {
+    for mut animation in &mut query {
+        animation.update_timer(time.delta());
+    }
+}
+/// Component that tracks fire's animation state.
+#[derive(Component, Default, Clone)]
+pub struct TransitionAnimation {
+    timer: Timer,
+    frame: usize,
+    left_to_right: bool,
+    next_state: ShopArea
+}
+
+fn next_state_when_transition_finished(transitions: Query<&TransitionAnimation>, mut next_state: ResMut<NextState<ShopArea>> ) {
+    for transition in transitions {
+        if transition.is_finished() {
+            next_state.set(transition.next_state)
+        }
+    }
+}
+
+impl TransitionAnimation {
+    pub const ANIMATION_FRAMES: usize = 12;
+    const ANIMATION_INTERVAL: Duration = Duration::from_millis(80);
+    /// Update animation timers.
+    pub fn update_timer(&mut self, delta: Duration) {
+        self.timer.tick(delta);
+        if !self.timer.is_finished() {
+            return;
+        }
+        if self.left_to_right {
+            self.frame = self.frame + 1;
+        } else {
+            self.frame = self.frame - 1;
+        }
+    }
+
+    /// Whether animation changed this tick.
+    pub fn changed(&self) -> bool {
+        self.timer.is_finished()
+    }
+
+    pub fn is_finished(&self) -> bool {
+        if self.left_to_right {
+            self.frame >= Self::ANIMATION_FRAMES
+        } else {
+            self.frame <= 0
+        }
+    }
+
+    pub(crate) fn new(left_to_right: bool, next_state: ShopArea) -> Self {
+        Self {
+            timer: Timer::new(Self::ANIMATION_INTERVAL, TimerMode::Repeating),
+            frame: if left_to_right {0} else {Self::ANIMATION_FRAMES -1},
+            left_to_right,
+            next_state,
+        }
+    }
+}
+
+/// Update the texture to reflect changes in the animation.
+fn update_transition_animation_sprite(mut query: Query<(&TransitionAnimation, &mut Sprite)>, level_assets: If<Res<LevelAssets>>) {
+    for (animation, mut sprite) in &mut query {
+        if animation.changed() {
+            sprite.image = level_assets.transition_animation.get(animation.frame.clamp(0, TransitionAnimation::ANIMATION_FRAMES-1)).unwrap().clone();
         }
     }
 }

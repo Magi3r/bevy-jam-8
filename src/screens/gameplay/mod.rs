@@ -2,7 +2,7 @@
 
 use bevy::{input::common_conditions::input_just_pressed, prelude::*};
 
-use crate::{Pause, game::level::spawn_level, menus::Menu, screens::Screen};
+use crate::{Pause, game::level::LevelAssets, game::{animation::{TransitionAnimation, transition_scene}, level::spawn_level}, menus::Menu, screens::Screen};
 
 pub mod cooking_area;
 pub mod storefront;
@@ -14,9 +14,10 @@ const CAM_MAX_X: f32 = 1000.0;
 /// The game's in-game areas.
 #[derive(States, Copy, Clone, Eq, PartialEq, Hash, Debug, Default)]
 pub enum ShopArea {
-    #[default]
     Storefront,
     CookingArea,
+    #[default]
+    TransitionAnimation,
 }
 
 impl ShopArea {
@@ -24,6 +25,7 @@ impl ShopArea {
         match self {
             ShopArea::Storefront => Some(ShopArea::CookingArea),
             ShopArea::CookingArea => None,
+            ShopArea::TransitionAnimation => None,
         }
     }
 
@@ -31,6 +33,7 @@ impl ShopArea {
         match self {
             ShopArea::Storefront => None,
             ShopArea::CookingArea => Some(ShopArea::Storefront),
+            ShopArea::TransitionAnimation => None,
         }
     }
 }
@@ -101,16 +104,22 @@ fn edge_pan_camera(
     mut camera: Query<&mut Transform, With<Camera2d>>,
     mut next_shop_area: ResMut<NextState<ShopArea>>,
     current_shop_area: Res<State<ShopArea>>,
+    mut commands: Commands,
+    level_assets: If<Res<LevelAssets>>
 ) {
     let window_width = window.single().unwrap().width();
     let mouse = window.single().unwrap().cursor_position();
     let edge_size = window_width * 0.02; // 2% window width for cam panning
     let cam_pos = camera.single_mut().unwrap();
     if let Some(mouse_pos) = mouse {
+
         if mouse_pos.x < edge_size + cam_pos.translation.x {
             if let Some(area_left) = current_shop_area.get_area_left() {
                 // TODO: play animation
-                next_shop_area.set(area_left);
+                println!("GO LEFT");
+                commands.spawn_scene(transition_scene(false, area_left, &level_assets));
+
+                next_shop_area.set(ShopArea::TransitionAnimation);
             }
             //     // pan left
             //     if cam_pos.translation.x > CAM_MIN_X {
@@ -121,7 +130,12 @@ fn edge_pan_camera(
         if mouse_pos.x > window_width - edge_size + cam_pos.translation.x {
             if let Some(area_right) = current_shop_area.get_area_right() {
                 // TODO: play animation
-                next_shop_area.set(area_right);
+                println!("GO RIGHT");
+
+                commands.spawn_scene(transition_scene(true, area_right, &level_assets));
+
+                next_shop_area.set(ShopArea::TransitionAnimation);
+
             }
             //     // pan right
             //     if cam_pos.translation.x > CAM_MIN_X {
