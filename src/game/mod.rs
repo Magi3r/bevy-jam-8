@@ -63,7 +63,7 @@ pub fn fire_scene(
     // You can learn more in this example: https://github.com/bevyengine/bevy/blob/latest/examples/2d/texture_atlas.rs
     let fire_animation = FireAnimation::new();
 
-    let layout = TextureAtlasLayout::from_grid(UVec2::new(1920, 1080), FireAnimation::ANIMATION_FRAMES as u32/2, 2, Some(UVec2::splat(0)), None);
+    let layout = TextureAtlasLayout::from_grid(UVec2::new(1920, 1080), FireAnimation::ANIMATION_FRAMES as u32/6, 6, Some(UVec2::splat(0)), None);
     let texture_atlas_layout = texture_atlas_layouts.add(layout);
 
 

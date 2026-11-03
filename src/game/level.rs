@@ -58,6 +58,9 @@ impl FromWorld for LevelAssets {
     }
 }
 
+#[derive(Component, Default, Clone)]
+pub struct LevelRoot;
+
 /// A system that spawns the main level.
 pub fn spawn_level(
     mut commands: Commands,
@@ -65,7 +68,8 @@ pub fn spawn_level(
     mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
 ) {
     commands.spawn_scene(bsn! {
-        #Level
+        #LevelRoot
+        LevelRoot
         Transform
         Visibility
         DespawnOnExit<Screen>(Screen::Gameplay)
