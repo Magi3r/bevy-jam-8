@@ -1,6 +1,10 @@
-use bevy::{camera::visibility, ecs::template::OptionTemplate, image::TextureAtlasTemplate, picking::hover::Hovered, prelude::*};
+use bevy::{
+    ecs::template::OptionTemplate, image::TextureAtlasTemplate, picking::hover::Hovered, prelude::*,
+};
 
-use crate::{game::animation::FireAnimation, screens::Screen::Gameplay, theme::palette::BUTTON_BACKGROUND};
+use crate::{
+    game::animation::FireAnimation, screens::Screen::Gameplay, theme::palette::BUTTON_BACKGROUND,
+};
 
 const TOOLTIP_OFFSET: Vec2 = Vec2::new(15.0, 15.0);
 
@@ -63,9 +67,14 @@ pub fn fire_scene(
     // You can learn more in this example: https://github.com/bevyengine/bevy/blob/latest/examples/2d/texture_atlas.rs
     let fire_animation = FireAnimation::new();
 
-    let layout = TextureAtlasLayout::from_grid(UVec2::new(1920, 1080), FireAnimation::ANIMATION_FRAMES as u32/6, 6, Some(UVec2::splat(0)), None);
+    let layout = TextureAtlasLayout::from_grid(
+        UVec2::new(1920, 1080),
+        FireAnimation::ANIMATION_FRAMES as u32 / 6,
+        6,
+        Some(UVec2::splat(0)),
+        None,
+    );
     let texture_atlas_layout = texture_atlas_layouts.add(layout);
-
 
     bsn! {
         #CauldronFire
@@ -80,7 +89,6 @@ pub fn fire_scene(
         Transform::from_xyz(0.0,0.0,0.0)
     }
 }
-
 
 fn tooltip() -> impl Scene {
     bsn! {
@@ -112,7 +120,7 @@ fn tooltip() -> impl Scene {
 }
 
 fn on_hover_update_tooltip_text(
-    items: Query<(&Hovered, &Interactable), (Changed<Hovered>)>,
+    items: Query<(&Hovered, &Interactable), Changed<Hovered>>,
     mut title: Query<&mut Text, (With<TooltipTitle>, Without<TooltipDescription>)>,
     mut description: Query<&mut Text, With<TooltipDescription>>,
 ) {
@@ -126,17 +134,15 @@ fn on_hover_update_tooltip_text(
 
 fn on_hover_toggle_item_tooltip(
     items: Query<&Hovered, (With<Interactable>, Changed<Hovered>)>,
-    mut tooltips: Query<(&mut Visibility), With<Tooltip>>,
+    mut tooltips: Query<&mut Visibility, With<Tooltip>>,
 ) {
-    for (hovered) in items {
-        println!("processing hover");
+    for hovered in items {
         if let Ok(mut visibility) = tooltips.single_mut() {
-            println!("setting visibility to on");
-            visibility.toggle_visible_hidden();
-            // *visibility = match hovered.0 {
-            //     true => Visibility::Visible,
-            //     false => Visibility::Hidden,
-            // }
+            // visibility.toggle_visible_hidden();
+            *visibility = match hovered.get() {
+                true => Visibility::Visible,
+                false => Visibility::Hidden,
+            }
         }
     }
 }

@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-pub(super) fn plugin(app: &mut App) {
+pub(super) fn plugin(_app: &mut App) {
     // app.load_resource::<PlayerAssets>();
 
     // Record directional input as movement controls.

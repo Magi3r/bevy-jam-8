@@ -1,6 +1,6 @@
 //! The screen state for the main gameplay.
 
-use bevy::{input::common_conditions::input_just_pressed, prelude::*, window::WindowResolution};
+use bevy::{input::common_conditions::input_just_pressed, prelude::*};
 
 use crate::{Pause, game::level::spawn_level, menus::Menu, screens::Screen};
 
@@ -10,8 +10,6 @@ pub mod storefront;
 const CAM_PAN_SPEED: f32 = 100.0;
 const CAM_MIN_X: f32 = -1000.0;
 const CAM_MAX_X: f32 = 1000.0;
-
-
 
 /// The game's in-game areas.
 #[derive(States, Copy, Clone, Eq, PartialEq, Hash, Debug, Default)]
@@ -24,7 +22,7 @@ pub enum ShopArea {
 impl ShopArea {
     fn get_area_left(&self) -> Option<ShopArea> {
         match self {
-            ShopArea::Storefront => Some(ShopArea::Storefront),
+            ShopArea::Storefront => Some(ShopArea::CookingArea),
             ShopArea::CookingArea => None,
         }
     }
@@ -32,7 +30,7 @@ impl ShopArea {
     fn get_area_right(&self) -> Option<ShopArea> {
         match self {
             ShopArea::Storefront => None,
-            ShopArea::CookingArea =>Some(ShopArea::CookingArea),
+            ShopArea::CookingArea => Some(ShopArea::Storefront),
         }
     }
 }
@@ -107,9 +105,8 @@ fn edge_pan_camera(
     let window_width = window.single().unwrap().width();
     let mouse = window.single().unwrap().cursor_position();
     let edge_size = window_width * 0.02; // 2% window width for cam panning
-    let mut cam_pos = camera.single_mut().unwrap();
+    let cam_pos = camera.single_mut().unwrap();
     if let Some(mouse_pos) = mouse {
-        // println!("window_width: {}, mouse_pos.x: {}, edge_size: {}, cam_pos.x: {}", window_width, mouse_pos.x, edge_size, cam_pos.translation.x);
         if mouse_pos.x < edge_size + cam_pos.translation.x {
             if let Some(area_left) = current_shop_area.get_area_left() {
                 // TODO: play animation

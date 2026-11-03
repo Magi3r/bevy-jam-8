@@ -13,13 +13,7 @@ mod menus;
 mod screens;
 mod theme;
 
-use bevy::{
-    asset::AssetMetaCheck,
-    camera::ScalingMode,
-    prelude::*,
-    render::view::{DebandDither, Tonemapping},
-    window::WindowResolution,
-};
+use bevy::{asset::AssetMetaCheck, prelude::*, window::WindowResolution};
 
 fn main() -> AppExit {
     App::new().add_plugins(AppPlugin).run()

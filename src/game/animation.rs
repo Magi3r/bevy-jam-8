@@ -5,10 +5,9 @@
 //! - [Timers](https://github.com/bevyengine/bevy/blob/latest/examples/time/timers.rs)
 
 use bevy::prelude::*;
-use rand::prelude::*;
 use std::time::Duration;
 
-use crate::{AppSystems, PausableSystems, audio::sound_effect};
+use crate::{AppSystems, PausableSystems};
 
 pub(super) fn plugin(app: &mut App) {
     // Animate and play sound effects based on controls.
@@ -66,10 +65,10 @@ impl FireAnimation {
     }
 
     pub(crate) fn new() -> Self {
-       Self {
+        Self {
             timer: Timer::new(Self::ANIMATION_INTERVAL, TimerMode::Repeating),
             frame: 0,
-       }
+        }
     }
 }
 

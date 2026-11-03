@@ -1,15 +1,13 @@
 //! Spawn the main level.
 
 use bevy::prelude::*;
-use bevy_inspector_egui::egui::Tooltip;
 
 use crate::{
-    asset_tracking::LoadResource, audio::music, demo::{
-        level,
-        player::{PlayerAssets, player},
-    }, game::{Interactable, animation::FireAnimation, fire_scene, item_scene, tooltip}, screens::{Screen, gameplay::{cooking_area::cooking_area_scene, storefront::storefront_scene}},
+    asset_tracking::LoadResource,
+    audio::music,
+    game::tooltip,
+    screens::{Screen, gameplay::storefront::storefront_scene},
 };
-
 
 pub(super) fn plugin(app: &mut App) {
     app.load_resource::<LevelAssets>();
@@ -88,14 +86,11 @@ pub fn spawn_level(
     });
 }
 
-fn switch_scene_on_input(
-    input: Res<ButtonInput<KeyCode>>,
-) {
+fn switch_scene_on_input(input: Res<ButtonInput<KeyCode>>) {
     if input.pressed(KeyCode::KeyA) || input.pressed(KeyCode::ArrowLeft) {
         todo!("Switch Scene left");
     }
     if input.pressed(KeyCode::KeyD) || input.pressed(KeyCode::ArrowRight) {
         todo!("Switch Scene right");
     }
-
 }
