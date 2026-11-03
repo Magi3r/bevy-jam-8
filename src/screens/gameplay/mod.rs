@@ -24,15 +24,15 @@ pub enum ShopArea {
 impl ShopArea {
     fn get_area_left(&self) -> Option<ShopArea> {
         match self {
-            ShopArea::Storefront => None,
-            ShopArea::CookingArea => Some(ShopArea::Storefront),
+            ShopArea::Storefront => Some(ShopArea::Storefront),
+            ShopArea::CookingArea => None,
         }
     }
 
     fn get_area_right(&self) -> Option<ShopArea> {
         match self {
-            ShopArea::Storefront => Some(ShopArea::CookingArea),
-            ShopArea::CookingArea => None,
+            ShopArea::Storefront => None,
+            ShopArea::CookingArea =>Some(ShopArea::CookingArea),
         }
     }
 }
