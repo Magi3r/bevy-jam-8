@@ -20,7 +20,6 @@ struct CookingAreaScene;
 
 pub fn cooking_area_scene(
     level_assets: &Res<LevelAssets>,
-    mut texture_atlas_layouts: &mut ResMut<Assets<TextureAtlasLayout>>,
 ) -> impl Scene {
     bsn! {
         #CookingArea
@@ -29,7 +28,7 @@ pub fn cooking_area_scene(
         Transform::from_xyz(0.0,0.0,-1.0)
         DespawnOnExit<ShopArea>(ShopArea::CookingArea)
         Children [
-                @fire_scene(level_assets.fire.clone(), &mut texture_atlas_layouts)
+                @fire_scene(level_assets.fire.first().unwrap().clone())
             --
                 @item_scene("Cauldron".to_string(), "Put in items and hope for the best".to_string(), level_assets.cauldron.clone())
             --
@@ -42,12 +41,11 @@ fn spawn_level(
     mut commands: Commands,
     level: Query<Entity, With<LevelRoot>>,
     level_assets: Res<LevelAssets>,
-    mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
 ) {
     for level in level {
         let child = commands
             .spawn_scene(bsn! {
-                @cooking_area_scene(&level_assets, &mut texture_atlas_layouts)
+                @cooking_area_scene(&level_assets)
             })
             .id();
         commands.entity(level).add_child(child);

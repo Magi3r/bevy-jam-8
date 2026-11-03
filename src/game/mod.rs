@@ -61,30 +61,15 @@ pub fn item_scene(name: String, description: String, image: Handle<Image>) -> im
 /// The fire below the cauldron.
 pub fn fire_scene(
     image: Handle<Image>,
-    texture_atlas_layouts: &mut Assets<TextureAtlasLayout>,
 ) -> impl Scene {
     // A texture atlas is a way to split a single image into a grid of related images.
     // You can learn more in this example: https://github.com/bevyengine/bevy/blob/latest/examples/2d/texture_atlas.rs
     let fire_animation = FireAnimation::new();
-
-    let layout = TextureAtlasLayout::from_grid(
-        UVec2::new(1920, 1080),
-        FireAnimation::ANIMATION_FRAMES as u32 / 6,
-        6,
-        Some(UVec2::splat(0)),
-        None,
-    );
-    let texture_atlas_layout = texture_atlas_layouts.add(layout);
-
     bsn! {
         #CauldronFire
         fire_animation
         Sprite {
             image:  { image },
-            texture_atlas: OptionTemplate::Some( TextureAtlasTemplate {
-                layout: texture_atlas_layout,
-                index: { fire_animation.get_atlas_index() },
-            } ),
         }
         Transform::from_xyz(0.0,0.0,0.0)
     }

@@ -35,7 +35,7 @@ pub struct LevelAssets {
     #[dependency]
     pub cauldron: Handle<Image>,
     #[dependency]
-    pub fire: Handle<Image>,
+    pub fire: Vec<Handle<Image>>,
 }
 
 impl FromWorld for LevelAssets {
@@ -50,7 +50,26 @@ impl FromWorld for LevelAssets {
             book_highlight_cooking_area: assets.load("images/highlight/Book_0.png"),
             book_highlight_storefront: assets.load("images/highlight/Book_1.png"),
             cauldron: assets.load("images/foreground/Cauldron.png"),
-            fire: assets.load("images/foreground/FireAtlas.png"),
+            fire: vec![
+                assets.load("images/foreground/Fire0001.png"),
+                assets.load("images/foreground/Fire0002.png"),
+                assets.load("images/foreground/Fire0003.png"),
+                assets.load("images/foreground/Fire0004.png"),
+                assets.load("images/foreground/Fire0005.png"),
+                assets.load("images/foreground/Fire0006.png"),
+                assets.load("images/foreground/Fire0007.png"),
+                assets.load("images/foreground/Fire0008.png"),
+                assets.load("images/foreground/Fire0009.png"),
+                assets.load("images/foreground/Fire0010.png"),
+                assets.load("images/foreground/Fire0009.png"),
+                assets.load("images/foreground/Fire0008.png"),
+                assets.load("images/foreground/Fire0007.png"),
+                assets.load("images/foreground/Fire0006.png"),
+                assets.load("images/foreground/Fire0005.png"),
+                assets.load("images/foreground/Fire0004.png"),
+                assets.load("images/foreground/Fire0003.png"),
+                assets.load("images/foreground/Fire0002.png"),
+            ],
             mortar: assets.load("images/foreground/Mortar.png"),
         }
     }
@@ -63,7 +82,6 @@ pub struct LevelRoot;
 pub fn spawn_level(
     mut commands: Commands,
     level_assets: Res<LevelAssets>,
-    mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
 ) {
     commands.spawn_scene(bsn! {
         #LevelRoot
@@ -72,8 +90,8 @@ pub fn spawn_level(
         Visibility
         DespawnOnExit<Screen>(Screen::Gameplay)
         Children [
-            // @cooking_area_scene(&level_assets, &mut texture_atlas_layouts)
-            @storefront_scene(&level_assets, &mut texture_atlas_layouts)
+            // @cooking_area_scene(&level_assets)
+            @storefront_scene(&level_assets)
 
             --
             #GameplayMusic

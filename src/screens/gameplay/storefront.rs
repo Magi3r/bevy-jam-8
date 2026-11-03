@@ -20,7 +20,6 @@ struct StorefrontScene;
 
 pub fn storefront_scene(
     level_assets: &Res<LevelAssets>,
-    _texture_atlas_layouts: &mut ResMut<Assets<TextureAtlasLayout>>,
 ) -> impl Scene {
     bsn! {
         #Storefront
@@ -40,12 +39,11 @@ fn spawn_level(
     mut commands: Commands,
     level: Query<Entity, With<LevelRoot>>,
     level_assets: Res<LevelAssets>,
-    mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
 ) {
     for level in level {
         let child = commands
             .spawn_scene(bsn! {
-                @storefront_scene(&level_assets, &mut texture_atlas_layouts)
+                @storefront_scene(&level_assets)
             })
             .id();
         commands.entity(level).add_child(child);

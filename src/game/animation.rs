@@ -7,7 +7,7 @@
 use bevy::prelude::*;
 use std::time::Duration;
 
-use crate::{AppSystems, PausableSystems};
+use crate::{AppSystems, PausableSystems, game::level::LevelAssets};
 
 pub(super) fn plugin(app: &mut App) {
     // Animate and play sound effects based on controls.
@@ -59,11 +59,6 @@ impl FireAnimation {
         self.timer.is_finished()
     }
 
-    /// Return sprite index in the atlas.
-    pub fn get_atlas_index(&self) -> usize {
-        self.frame
-    }
-
     pub(crate) fn new() -> Self {
         Self {
             timer: Timer::new(Self::ANIMATION_INTERVAL, TimerMode::Repeating),
@@ -73,13 +68,10 @@ impl FireAnimation {
 }
 
 /// Update the texture atlas to reflect changes in the animation.
-fn update_animation_atlas(mut query: Query<(&FireAnimation, &mut Sprite)>) {
+fn update_animation_atlas(mut query: Query<(&FireAnimation, &mut Sprite)>, level_assets: If<Res<LevelAssets>>) {
     for (animation, mut sprite) in &mut query {
-        let Some(atlas) = sprite.texture_atlas.as_mut() else {
-            continue;
-        };
         if animation.changed() {
-            atlas.index = animation.get_atlas_index();
+            sprite.image = level_assets.fire.get(animation.frame).unwrap().clone();
         }
     }
 }
