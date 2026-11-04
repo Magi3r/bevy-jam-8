@@ -11,7 +11,10 @@ use crate::screens::{Screen, gameplay::ShopArea};
 
 pub(super) fn plugin(app: &mut App) {
     // Log `Screen` state transitions.
-    app.add_systems(Update, (log_transitions::<Screen>, log_transitions::<ShopArea>));
+    app.add_systems(
+        Update,
+        (log_transitions::<Screen>, log_transitions::<ShopArea>),
+    );
     app.add_plugins((
         EguiPlugin::default(),
         WorldInspectorPlugin::new().run_if(input_toggle_active(false, TOGGLE_KEY)),

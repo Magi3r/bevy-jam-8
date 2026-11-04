@@ -8,7 +8,7 @@ use crate::{
 
 const TOOLTIP_OFFSET: Vec2 = Vec2::new(15.0, 15.0);
 
-mod alchemy;
+pub mod alchemy;
 pub mod animation;
 pub mod level;
 
@@ -48,7 +48,12 @@ struct Highlight;
 #[derive(Component, Default, Clone)]
 struct TooltipDescription;
 
-pub fn item_scene(name: String, description: String, image: Handle<Image>, highlight_image: Handle<Image>) -> impl Scene {
+pub fn item_scene(
+    name: String,
+    description: String,
+    image: Handle<Image>,
+    highlight_image: Handle<Image>,
+) -> impl Scene {
     bsn! {
         #Item
         Interactable {
@@ -175,13 +180,12 @@ fn on_hover_show_highlight(
 ) {
     for (hovered, children) in items {
         for child in children {
-            if let Ok(mut visibility) =highlight.get_mut(*child) {
+            if let Ok(mut visibility) = highlight.get_mut(*child) {
                 *visibility = match hovered.get() {
                     false => Visibility::Hidden,
                     true => Visibility::Visible,
                 }
             }
-
         }
     }
 }

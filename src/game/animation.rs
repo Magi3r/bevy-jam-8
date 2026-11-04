@@ -136,10 +136,10 @@ impl TransitionAnimation {
         if !self.timer.is_finished() {
             return;
         }
-        if self.left_to_right {
-            self.frame = self.frame + 1;
-        } else {
-            self.frame = self.frame - 1;
+        if self.left_to_right && self.frame < Self::ANIMATION_FRAMES {
+            self.frame += 1;
+        } else if self.frame > 0 {
+            self.frame -= 1;
         }
     }
 
@@ -152,7 +152,7 @@ impl TransitionAnimation {
         if self.left_to_right {
             self.frame >= Self::ANIMATION_FRAMES
         } else {
-            self.frame <= 0
+            self.frame == 0
         }
     }
 

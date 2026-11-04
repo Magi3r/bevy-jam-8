@@ -2,7 +2,14 @@
 
 use bevy::{input::common_conditions::input_just_pressed, prelude::*};
 
-use crate::{menus::Menu, screens::Screen, theme::widget};
+use crate::{
+    menus::Menu,
+    screens::{
+        Screen,
+        gameplay::ShopArea::{self, TransitionAnimation},
+    },
+    theme::widget,
+};
 
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(OnEnter(Menu::Pause), spawn_pause_menu.spawn());
@@ -37,8 +44,13 @@ fn close_menu(_: On<PointerClick>, mut next_menu: ResMut<NextState<Menu>>) {
     next_menu.set(Menu::None);
 }
 
-fn quit_to_title(_: On<PointerClick>, mut next_screen: ResMut<NextState<Screen>>) {
+fn quit_to_title(
+    _: On<PointerClick>,
+    mut next_screen: ResMut<NextState<Screen>>,
+    mut next_shoparea: ResMut<NextState<ShopArea>>,
+) {
     next_screen.set(Screen::Title);
+    next_shoparea.set(TransitionAnimation);
 }
 
 fn go_back(mut next_menu: ResMut<NextState<Menu>>) {

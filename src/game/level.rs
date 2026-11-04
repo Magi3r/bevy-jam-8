@@ -1,22 +1,30 @@
 //! Spawn the main level.
 
 use bevy::{audio::Source, prelude::*};
+use bevy_common_assets::ron::RonAssetPlugin;
 
 use crate::{
     asset_tracking::LoadResource,
     audio::music,
-    game::{animation::transition_scene, tooltip},
+    game::{
+        alchemy::{Recipe, RecipeBook},
+        animation::transition_scene,
+        tooltip,
+    },
     screens::{
         Screen,
         gameplay::{
-            ShopArea::{CookingArea, Storefront},
+            ShopArea::{self, CookingArea, Storefront, TransitionAnimation},
             storefront::storefront_scene,
         },
     },
 };
 
 pub(super) fn plugin(app: &mut App) {
+    app.init_asset::<RecipeBook>();
+    app.add_plugins(RonAssetPlugin::<RecipeBook>::new(&["ron"]));
     app.load_resource::<LevelAssets>();
+    app.add_systems(OnEnter(Screen::Gameplay), spawn_level);
 }
 
 #[derive(Resource, Asset, Clone, Reflect)]
@@ -56,13 +64,15 @@ pub struct LevelAssets {
     pub cauldron_bubbling_sfx: Handle<AudioSource>,
     #[dependency]
     pub fire_ambience_sfx: Handle<AudioSource>,
+    #[dependency]
+    pub recipes: Handle<RecipeBook>,
 }
 
 impl FromWorld for LevelAssets {
     fn from_world(world: &mut World) -> Self {
         let assets = world.resource::<AssetServer>();
         Self {
-            music: assets.load("audio/music/Fluffing A Duck.ogg"),
+            // Images
             background_cooking_area: assets.load("images/background/Background_0.png"),
             background_storefront: assets.load("images/background/Background_1.png"),
             book_cooking_area: assets.load("images/foreground/Book_0.png"),
@@ -130,9 +140,12 @@ impl FromWorld for LevelAssets {
             ],
 
             // Audio
+            music: assets.load("audio/music/Fluffing A Duck.ogg"),
             cauldron_bubbling_sfx: assets.load("audio/sound_effects/boiling_cauldron.mp3"),
             fire_ambience_sfx: assets
                 .load("audio/sound_effects/Fire/engyclick-firewood-burning-sound-179862.mp3"),
+            // Other
+            recipes: assets.load("recipes.ron"),
         }
     }
 }
@@ -143,19 +156,24 @@ pub struct LevelRoot;
 /// A system that spawns the main level.
 pub fn spawn_level(mut commands: Commands, level_assets: Res<LevelAssets>) {
     commands.spawn_scene(bsn! {
-        #LevelRoot
-        LevelRoot
-        Transform
-        Visibility
-        DespawnOnExit<Screen>(Screen::Gameplay)
-        Children [
-            // @cooking_area_scene(&level_assets)
-            // @storefront_scene(&level_assets)
-            @transition_scene(true, Storefront, &level_assets)
-
-            --
-            #GameplayMusic
-            @music(level_assets.music.clone())
+    #LevelRoot
+    LevelRoot
+    Transform
+    Visibility
+    DespawnOnExit<Screen>(Screen::Gameplay)
+    Children [
+        // @cooking_area_scene(&level_assets)
+        // @storefront_scene(&level_assets)
+        @transition_scene(true, Storefront, &level_assets)
+        --
+        #FireAmbienceSFX
+        @music(level_assets.fire_ambience_sfx.clone())
+        --
+        #CauldronAmbienceSFX
+        @music(level_assets.cauldron_bubbling_sfx.clone())
+        // --
+        // #GameplayMusic
+        // @music(level_assets.music.clone())
         ]
     });
     commands.spawn_scene(bsn! {

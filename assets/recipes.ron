@@ -1,0 +1,27 @@
+([
+    (
+        name: "Cook Jelly Nettle",
+        ingredients: [
+            (Alchemy(JellyNettle), 1)
+        ],
+        produces: [
+            (Element(Life), 5),
+            (Element(Soul), 1),
+        ],
+        uses: Cauldron,
+        discovered: true,
+    ),
+    (
+        name: "Health Potion",
+        ingredients: [
+            (Element(Life), 5),
+            (Element(Fire), 1),
+        ],
+        produces: [
+            (Alchemy(HealthPotion), 1),
+        ],
+        uses: Cauldron,
+        discovered: false,
+    )
+
+])

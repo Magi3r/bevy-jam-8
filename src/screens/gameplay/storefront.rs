@@ -18,9 +18,7 @@ pub(super) fn plugin(app: &mut App) {
 #[derive(Component, Clone, Default)]
 struct StorefrontScene;
 
-pub fn storefront_scene(
-    level_assets: &Res<LevelAssets>,
-) -> impl Scene {
+pub fn storefront_scene(level_assets: &Res<LevelAssets>) -> impl Scene {
     bsn! {
         #Storefront
         StorefrontScene

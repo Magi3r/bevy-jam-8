@@ -2,14 +2,13 @@
 
 use bevy::{input::common_conditions::input_just_pressed, prelude::*};
 
-use crate::{Pause, game::level::LevelAssets, game::{animation::{TransitionAnimation, transition_scene}, level::spawn_level}, menus::Menu, screens::Screen};
+use crate::{
+    Pause, game::animation::transition_scene, game::level::LevelAssets, menus::Menu,
+    screens::Screen,
+};
 
 pub mod cooking_area;
 pub mod storefront;
-
-const CAM_PAN_SPEED: f32 = 100.0;
-const CAM_MIN_X: f32 = -1000.0;
-const CAM_MAX_X: f32 = 1000.0;
 
 /// The game's in-game areas.
 #[derive(States, Copy, Clone, Eq, PartialEq, Hash, Debug, Default)]
@@ -39,8 +38,6 @@ impl ShopArea {
 }
 
 pub(super) fn plugin(app: &mut App) {
-    app.add_systems(OnEnter(Screen::Gameplay), spawn_level);
-
     app.init_state::<ShopArea>();
     app.add_plugins((cooking_area::plugin, storefront::plugin));
     // Toggle pause on key press.
@@ -105,14 +102,13 @@ fn edge_pan_camera(
     mut next_shop_area: ResMut<NextState<ShopArea>>,
     current_shop_area: Res<State<ShopArea>>,
     mut commands: Commands,
-    level_assets: If<Res<LevelAssets>>
+    level_assets: If<Res<LevelAssets>>,
 ) {
     let window_width = window.single().unwrap().width();
     let mouse = window.single().unwrap().cursor_position();
     let edge_size = window_width * 0.02; // 2% window width for cam panning
     let cam_pos = camera.single_mut().unwrap();
     if let Some(mouse_pos) = mouse {
-
         if mouse_pos.x < edge_size + cam_pos.translation.x {
             if let Some(area_left) = current_shop_area.get_area_left() {
                 // TODO: play animation
@@ -135,7 +131,6 @@ fn edge_pan_camera(
                 commands.spawn_scene(transition_scene(true, area_right, &level_assets));
 
                 next_shop_area.set(ShopArea::TransitionAnimation);
-
             }
             //     // pan right
             //     if cam_pos.translation.x > CAM_MIN_X {
