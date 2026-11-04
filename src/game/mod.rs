@@ -20,6 +20,7 @@ pub(super) fn plugin(app: &mut App) {
             on_hover_toggle_item_tooltip,
             update_tooltip_position,
             on_hover_update_tooltip_text,
+            on_hover_show_highlight,
         )
             .run_if(in_state(Gameplay)),
     );
@@ -42,9 +43,12 @@ struct Tooltip;
 struct TooltipTitle;
 
 #[derive(Component, Default, Clone)]
+struct Highlight;
+
+#[derive(Component, Default, Clone)]
 struct TooltipDescription;
 
-pub fn item_scene(name: String, description: String, image: Handle<Image>) -> impl Scene {
+pub fn item_scene(name: String, description: String, image: Handle<Image>, highlight_image: Handle<Image>) -> impl Scene {
     bsn! {
         #Item
         Interactable {
@@ -55,23 +59,30 @@ pub fn item_scene(name: String, description: String, image: Handle<Image>) -> im
         Transform::from_xyz(0.0,0.0,1.0)
         Pickable
         Hovered
+        Children [
+            @highlight(highlight_image)
+        ]
     }
 }
 
 /// The fire below the cauldron.
-pub fn fire_scene(
-    image: Handle<Image>,
-) -> impl Scene {
+pub fn fire_scene(image: Handle<Image>, highlight_image: Handle<Image>) -> impl Scene {
     // A texture atlas is a way to split a single image into a grid of related images.
     // You can learn more in this example: https://github.com/bevyengine/bevy/blob/latest/examples/2d/texture_atlas.rs
     let fire_animation = FireAnimation::new();
     bsn! {
         #CauldronFire
         fire_animation
+        Interactable {name: "Fire", description: "Ouch! Its hot. Why not touch it again?"}
         Sprite {
             image:  { image },
         }
         Transform::from_xyz(0.0,0.0,0.0)
+        Children [
+            @highlight(highlight_image)
+        ]
+        Pickable
+        Hovered
     }
 }
 
@@ -101,6 +112,18 @@ fn tooltip() -> impl Scene {
         ]
         Visibility::Hidden
         GlobalZIndex(100)
+    }
+}
+
+fn highlight(image: Handle<Image>) -> impl Scene {
+    bsn! {
+        #Highlight
+        Highlight
+        Sprite {
+            image,
+        }
+        Transform::from_xyz(0.0, 0.0, -0.1)
+        Visibility::Hidden
     }
 }
 
@@ -142,6 +165,23 @@ fn update_tooltip_position(
         if let Ok(mut node) = tooltip.single_mut() {
             node.left = px(pos.x + TOOLTIP_OFFSET.x);
             node.top = px(pos.y + TOOLTIP_OFFSET.y);
+        }
+    }
+}
+
+fn on_hover_show_highlight(
+    items: Query<(&Hovered, &Children), (With<Interactable>, Changed<Hovered>)>,
+    mut highlight: Query<&mut Visibility, With<Highlight>>,
+) {
+    for (hovered, children) in items {
+        for child in children {
+            if let Ok(mut visibility) =highlight.get_mut(*child) {
+                *visibility = match hovered.get() {
+                    false => Visibility::Hidden,
+                    true => Visibility::Visible,
+                }
+            }
+
         }
     }
 }

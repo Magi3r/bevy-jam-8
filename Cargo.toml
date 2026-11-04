@@ -6,7 +6,7 @@ edition = "2024"
 
 [dependencies]
 # Use only features needed for a 2D game to improve compile time and size
-bevy = { version = "0.20.1", default-features = false, features = ["2d", "ui", "audio"] }
+bevy = { version = "0.20.1", default-features = false, features = ["2d", "ui", "audio", "mp3", "wav"] }
 bevy-inspector-egui = "0.38.0"
 rand = "0.10"
 # Compile out low-severity logs to improve performance.

@@ -1,11 +1,10 @@
 use bevy::prelude::*;
 
 use crate::{
-    game::{
+    audio::{music, sound_effect}, game::{
         fire_scene, item_scene,
         level::{LevelAssets, LevelRoot},
-    },
-    screens::{Screen::Gameplay, gameplay::ShopArea},
+    }, screens::{Screen::Gameplay, gameplay::ShopArea},
 };
 
 pub(super) fn plugin(app: &mut App) {
@@ -28,11 +27,13 @@ pub fn cooking_area_scene(
         Transform::from_xyz(0.0,0.0,-1.0)
         DespawnOnExit<ShopArea>(ShopArea::CookingArea)
         Children [
-                @fire_scene(level_assets.fire.first().unwrap().clone())
+                @fire_scene(level_assets.fire.first().unwrap().clone(), level_assets.fire_highlight.clone())
+                @music(level_assets.fire_ambience_sfx.clone())
             --
-                @item_scene("Cauldron".to_string(), "Put in items and hope for the best".to_string(), level_assets.cauldron.clone())
+                @item_scene("Cauldron".to_string(), "Put in items and hope for the best".to_string(), level_assets.cauldron.clone(), level_assets.cauldron_highlight.clone())
+                @music(level_assets.cauldron_bubbling_sfx.clone())
             --
-                @item_scene("Book".to_string(), "Study discovered recipes".to_string(), level_assets.book_cooking_area.clone())
+                @item_scene("Book".to_string(), "Study discovered recipes".to_string(), level_assets.book_cooking_area.clone(), level_assets.book_highlight_cooking_area.clone())
         ]
     }
 }

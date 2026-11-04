@@ -1,6 +1,6 @@
 //! Spawn the main level.
 
-use bevy::prelude::*;
+use bevy::{audio::Source, prelude::*};
 
 use crate::{
     asset_tracking::LoadResource, audio::music, game::{animation::transition_scene, tooltip}, screens::{Screen, gameplay::{ShopArea::{CookingArea, Storefront}, storefront::storefront_scene}},
@@ -39,6 +39,12 @@ pub struct LevelAssets {
     pub mortar_highlight: Handle<Image>,
     #[dependency]
     pub fire_highlight: Handle<Image>,
+    #[dependency]
+    pub cauldron_highlight: Handle<Image>,
+    #[dependency]
+    pub cauldron_bubbling_sfx: Handle<AudioSource>,
+    #[dependency]
+    pub fire_ambience_sfx: Handle<AudioSource>
 }
 
 impl FromWorld for LevelAssets {
@@ -53,6 +59,7 @@ impl FromWorld for LevelAssets {
             book_highlight_cooking_area: assets.load("images/highlight/Book_0.png"),
             book_highlight_storefront: assets.load("images/highlight/Book_1.png"),
             cauldron: assets.load("images/foreground/Cauldron.png"),
+            cauldron_highlight: assets.load("images/highlight/Cauldron.png"),
             fire: vec![
                 assets.load("images/foreground/Fire0001.png"),
                 assets.load("images/foreground/Fire0002.png"),
@@ -90,6 +97,10 @@ impl FromWorld for LevelAssets {
                 assets.load("images/animation/transition0011.png"),
                 assets.load("images/animation/transition0012.png"),
             ],
+
+            // Audio
+            cauldron_bubbling_sfx: assets.load("audio/sound_effects/boiling_cauldron.mp3"),
+            fire_ambience_sfx: assets.load("audio/sound_effects/Fire/engyclick-firewood-burning-sound-179862.mp3"),
         }
     }
 }

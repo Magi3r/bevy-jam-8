@@ -28,9 +28,9 @@ pub fn storefront_scene(
         Transform::from_xyz(0.0,0.0,-1.0)
         DespawnOnExit<ShopArea>(ShopArea::Storefront)
         Children [
-                @item_scene("Mortar".to_string(), "Grind stuff into other stuff".to_string(), level_assets.mortar.clone())
+                @item_scene("Mortar".to_string(), "Grind stuff into other stuff".to_string(), level_assets.mortar.clone(), level_assets.mortar_highlight.clone())
             --
-                @item_scene("Book".to_string(), "Study discovered recipes".to_string(), level_assets.book_storefront.clone())
+                @item_scene("Book".to_string(), "Study discovered recipes".to_string(), level_assets.book_storefront.clone(), level_assets.book_highlight_storefront.clone())
         ]
     }
 }
