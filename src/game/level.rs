@@ -3,7 +3,16 @@
 use bevy::{audio::Source, prelude::*};
 
 use crate::{
-    asset_tracking::LoadResource, audio::music, game::{animation::transition_scene, tooltip}, screens::{Screen, gameplay::{ShopArea::{CookingArea, Storefront}, storefront::storefront_scene}},
+    asset_tracking::LoadResource,
+    audio::music,
+    game::{animation::transition_scene, tooltip},
+    screens::{
+        Screen,
+        gameplay::{
+            ShopArea::{CookingArea, Storefront},
+            storefront::storefront_scene,
+        },
+    },
 };
 
 pub(super) fn plugin(app: &mut App) {
@@ -32,6 +41,8 @@ pub struct LevelAssets {
     #[dependency]
     pub cauldron: Handle<Image>,
     #[dependency]
+    pub cauldron_empty: Vec<Handle<Image>>,
+    #[dependency]
     pub fire: Vec<Handle<Image>>,
     #[dependency]
     pub transition_animation: Vec<Handle<Image>>,
@@ -44,7 +55,7 @@ pub struct LevelAssets {
     #[dependency]
     pub cauldron_bubbling_sfx: Handle<AudioSource>,
     #[dependency]
-    pub fire_ambience_sfx: Handle<AudioSource>
+    pub fire_ambience_sfx: Handle<AudioSource>,
 }
 
 impl FromWorld for LevelAssets {
@@ -60,47 +71,68 @@ impl FromWorld for LevelAssets {
             book_highlight_storefront: assets.load("images/highlight/Book_1.png"),
             cauldron: assets.load("images/foreground/Cauldron.png"),
             cauldron_highlight: assets.load("images/highlight/Cauldron.png"),
+            cauldron_empty: vec![
+                assets.load("images/animation/cauldron_empty/cauldron0001.png"),
+                assets.load("images/animation/cauldron_empty/cauldron0002.png"),
+                assets.load("images/animation/cauldron_empty/cauldron0003.png"),
+                assets.load("images/animation/cauldron_empty/cauldron0004.png"),
+                assets.load("images/animation/cauldron_empty/cauldron0005.png"),
+                assets.load("images/animation/cauldron_empty/cauldron0006.png"),
+                assets.load("images/animation/cauldron_empty/cauldron0007.png"),
+                assets.load("images/animation/cauldron_empty/cauldron0008.png"),
+                assets.load("images/animation/cauldron_empty/cauldron0009.png"),
+                assets.load("images/animation/cauldron_empty/cauldron0010.png"),
+                assets.load("images/animation/cauldron_empty/cauldron0011.png"),
+                assets.load("images/animation/cauldron_empty/cauldron0012.png"),
+                assets.load("images/animation/cauldron_empty/cauldron0013.png"),
+                assets.load("images/animation/cauldron_empty/cauldron0014.png"),
+                assets.load("images/animation/cauldron_empty/cauldron0015.png"),
+                assets.load("images/animation/cauldron_empty/cauldron0016.png"),
+                assets.load("images/animation/cauldron_empty/cauldron0017.png"),
+                assets.load("images/animation/cauldron_empty/cauldron0018.png"),
+                assets.load("images/animation/cauldron_empty/cauldron0019.png"),
+                assets.load("images/animation/cauldron_empty/cauldron0020.png"),
+                assets.load("images/animation/cauldron_empty/cauldron0021.png"),
+                assets.load("images/animation/cauldron_empty/cauldron0022.png"),
+                assets.load("images/animation/cauldron_empty/cauldron0023.png"),
+                assets.load("images/animation/cauldron_empty/cauldron0024.png"),
+            ],
             fire: vec![
-                assets.load("images/foreground/Fire0001.png"),
-                assets.load("images/foreground/Fire0002.png"),
-                assets.load("images/foreground/Fire0003.png"),
-                assets.load("images/foreground/Fire0004.png"),
-                assets.load("images/foreground/Fire0005.png"),
-                assets.load("images/foreground/Fire0006.png"),
-                assets.load("images/foreground/Fire0007.png"),
-                assets.load("images/foreground/Fire0008.png"),
-                assets.load("images/foreground/Fire0009.png"),
-                assets.load("images/foreground/Fire0010.png"),
-                assets.load("images/foreground/Fire0009.png"),
-                assets.load("images/foreground/Fire0008.png"),
-                assets.load("images/foreground/Fire0007.png"),
-                assets.load("images/foreground/Fire0006.png"),
-                assets.load("images/foreground/Fire0005.png"),
-                assets.load("images/foreground/Fire0004.png"),
-                assets.load("images/foreground/Fire0003.png"),
-                assets.load("images/foreground/Fire0002.png"),
+                assets.load("images/foreground/fire/Fire0001.png"),
+                assets.load("images/foreground/fire/Fire0002.png"),
+                assets.load("images/foreground/fire/Fire0003.png"),
+                assets.load("images/foreground/fire/Fire0004.png"),
+                assets.load("images/foreground/fire/Fire0005.png"),
+                assets.load("images/foreground/fire/Fire0006.png"),
+                assets.load("images/foreground/fire/Fire0007.png"),
+                assets.load("images/foreground/fire/Fire0008.png"),
+                assets.load("images/foreground/fire/Fire0009.png"),
+                assets.load("images/foreground/fire/Fire0010.png"),
+                assets.load("images/foreground/fire/Fire0011.png"),
+                assets.load("images/foreground/fire/Fire0012.png"),
             ],
             fire_highlight: assets.load("images/highlight/Fire.png"),
             mortar: assets.load("images/foreground/Mortar.png"),
             mortar_highlight: assets.load("images/highlight/Mortar.png"),
             transition_animation: vec![
-                assets.load("images/animation/transition0001.png"),
-                assets.load("images/animation/transition0002.png"),
-                assets.load("images/animation/transition0003.png"),
-                assets.load("images/animation/transition0004.png"),
-                assets.load("images/animation/transition0005.png"),
-                assets.load("images/animation/transition0006.png"),
-                assets.load("images/animation/transition0007.png"),
-                assets.load("images/animation/transition0008.png"),
-                assets.load("images/animation/transition0009.png"),
-                assets.load("images/animation/transition0010.png"),
-                assets.load("images/animation/transition0011.png"),
-                assets.load("images/animation/transition0012.png"),
+                assets.load("images/animation/transition/transition0001.png"),
+                assets.load("images/animation/transition/transition0002.png"),
+                assets.load("images/animation/transition/transition0003.png"),
+                assets.load("images/animation/transition/transition0004.png"),
+                assets.load("images/animation/transition/transition0005.png"),
+                assets.load("images/animation/transition/transition0006.png"),
+                assets.load("images/animation/transition/transition0007.png"),
+                assets.load("images/animation/transition/transition0008.png"),
+                assets.load("images/animation/transition/transition0009.png"),
+                assets.load("images/animation/transition/transition0010.png"),
+                assets.load("images/animation/transition/transition0011.png"),
+                assets.load("images/animation/transition/transition0012.png"),
             ],
 
             // Audio
             cauldron_bubbling_sfx: assets.load("audio/sound_effects/boiling_cauldron.mp3"),
-            fire_ambience_sfx: assets.load("audio/sound_effects/Fire/engyclick-firewood-burning-sound-179862.mp3"),
+            fire_ambience_sfx: assets
+                .load("audio/sound_effects/Fire/engyclick-firewood-burning-sound-179862.mp3"),
         }
     }
 }
@@ -109,10 +141,7 @@ impl FromWorld for LevelAssets {
 pub struct LevelRoot;
 
 /// A system that spawns the main level.
-pub fn spawn_level(
-    mut commands: Commands,
-    level_assets: Res<LevelAssets>,
-) {
+pub fn spawn_level(mut commands: Commands, level_assets: Res<LevelAssets>) {
     commands.spawn_scene(bsn! {
         #LevelRoot
         LevelRoot

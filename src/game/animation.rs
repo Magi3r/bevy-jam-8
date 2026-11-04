@@ -14,7 +14,11 @@ pub(super) fn plugin(app: &mut App) {
     app.add_systems(
         Update,
         (
-            (update_fire_animation_timer,update_transition_animation_timer).in_set(AppSystems::TickTimers),
+            (
+                update_fire_animation_timer,
+                update_transition_animation_timer,
+            )
+                .in_set(AppSystems::TickTimers),
             (
                 // update_animation_movement,
                 update_fire_animation_sprite.run_if(in_state(ShopArea::CookingArea)),
@@ -25,7 +29,10 @@ pub(super) fn plugin(app: &mut App) {
         )
             .in_set(PausableSystems),
     );
-    app.add_systems(Update, next_state_when_transition_finished.run_if(in_state(ShopArea::TransitionAnimation)));
+    app.add_systems(
+        Update,
+        next_state_when_transition_finished.run_if(in_state(ShopArea::TransitionAnimation)),
+    );
 }
 
 /// Update the animation timer.
@@ -44,8 +51,8 @@ pub struct FireAnimation {
 }
 
 impl FireAnimation {
-    pub const ANIMATION_FRAMES: usize = 18;
-    const ANIMATION_INTERVAL: Duration = Duration::from_millis(100);
+    pub const ANIMATION_FRAMES: usize = 12;
+    const ANIMATION_INTERVAL: Duration = Duration::from_millis(120);
     /// Update animation timers.
     pub fn update_timer(&mut self, delta: Duration) {
         self.timer.tick(delta);
@@ -69,7 +76,10 @@ impl FireAnimation {
 }
 
 /// Update the texture to reflect changes in the animation.
-fn update_fire_animation_sprite(mut query: Query<(&FireAnimation, &mut Sprite)>, level_assets: If<Res<LevelAssets>>) {
+fn update_fire_animation_sprite(
+    mut query: Query<(&FireAnimation, &mut Sprite)>,
+    level_assets: If<Res<LevelAssets>>,
+) {
     for (animation, mut sprite) in &mut query {
         if animation.changed() {
             sprite.image = level_assets.fire.get(animation.frame).unwrap().clone();
@@ -77,7 +87,11 @@ fn update_fire_animation_sprite(mut query: Query<(&FireAnimation, &mut Sprite)>,
     }
 }
 
-pub fn transition_scene(left_to_right: bool, next_state: ShopArea, level_assets: &LevelAssets) -> impl Scene {
+pub fn transition_scene(
+    left_to_right: bool,
+    next_state: ShopArea,
+    level_assets: &LevelAssets,
+) -> impl Scene {
     let transition = TransitionAnimation::new(left_to_right, next_state);
     bsn! {
         #TransitionAnimation
@@ -99,10 +113,13 @@ pub struct TransitionAnimation {
     timer: Timer,
     frame: usize,
     left_to_right: bool,
-    next_state: ShopArea
+    next_state: ShopArea,
 }
 
-fn next_state_when_transition_finished(transitions: Query<&TransitionAnimation>, mut next_state: ResMut<NextState<ShopArea>> ) {
+fn next_state_when_transition_finished(
+    transitions: Query<&TransitionAnimation>,
+    mut next_state: ResMut<NextState<ShopArea>>,
+) {
     for transition in transitions {
         if transition.is_finished() {
             next_state.set(transition.next_state)
@@ -112,7 +129,7 @@ fn next_state_when_transition_finished(transitions: Query<&TransitionAnimation>,
 
 impl TransitionAnimation {
     pub const ANIMATION_FRAMES: usize = 12;
-    const ANIMATION_INTERVAL: Duration = Duration::from_millis(80);
+    const ANIMATION_INTERVAL: Duration = Duration::from_millis(42);
     /// Update animation timers.
     pub fn update_timer(&mut self, delta: Duration) {
         self.timer.tick(delta);
@@ -142,7 +159,11 @@ impl TransitionAnimation {
     pub(crate) fn new(left_to_right: bool, next_state: ShopArea) -> Self {
         Self {
             timer: Timer::new(Self::ANIMATION_INTERVAL, TimerMode::Repeating),
-            frame: if left_to_right {0} else {Self::ANIMATION_FRAMES -1},
+            frame: if left_to_right {
+                0
+            } else {
+                Self::ANIMATION_FRAMES - 1
+            },
             left_to_right,
             next_state,
         }
@@ -150,10 +171,21 @@ impl TransitionAnimation {
 }
 
 /// Update the texture to reflect changes in the animation.
-fn update_transition_animation_sprite(mut query: Query<(&TransitionAnimation, &mut Sprite)>, level_assets: If<Res<LevelAssets>>) {
+fn update_transition_animation_sprite(
+    mut query: Query<(&TransitionAnimation, &mut Sprite)>,
+    level_assets: If<Res<LevelAssets>>,
+) {
     for (animation, mut sprite) in &mut query {
         if animation.changed() {
-            sprite.image = level_assets.transition_animation.get(animation.frame.clamp(0, TransitionAnimation::ANIMATION_FRAMES-1)).unwrap().clone();
+            sprite.image = level_assets
+                .transition_animation
+                .get(
+                    animation
+                        .frame
+                        .clamp(0, TransitionAnimation::ANIMATION_FRAMES - 1),
+                )
+                .unwrap()
+                .clone();
         }
     }
 }
