@@ -1,5 +1,6 @@
-use bevy::{platform::collections::HashMap, prelude::*};
+use bevy::prelude::*;
 use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 
 use crate::game::level::LevelAssets;
 
@@ -17,14 +18,44 @@ pub(super) fn plugin(app: &mut App) {
     // );
 }
 
-fn debug_dump_recipebook(level_assets: If<Res<LevelAssets>>,
-            recipes: If<Res<Assets<RecipeBook>>>) {
+fn debug_dump_recipebook(level_assets: If<Res<LevelAssets>>, recipes: If<Res<Assets<RecipeBook>>>) {
     let recipes = recipes.0.get(&level_assets.0.recipes);
     println!("{:?}", &recipes);
 }
 
 #[derive(Asset, TypePath, Serialize, Deserialize, Debug)]
 pub struct RecipeBook(pub Vec<Recipe>);
+
+/// Index structure to see whether a combination of ingredients with the quantities is a registered recipe.
+pub struct RecipeIndex(pub HashMap<Vec<(Ingredient, usize)>, Recipe>);
+
+impl RecipeIndex {
+    pub fn from_recipes(recipes: &[Recipe]) -> Self {
+        let index = recipes
+            .iter()
+            .map(|recipe| {
+                let mut ingredients = recipe.ingredients.clone();
+                ingredients.sort_by_key(|(ingredient, _)| ingredient.clone());
+
+                (ingredients, recipe.clone())
+            })
+            .collect();
+
+        Self(index)
+    }
+
+    pub fn recipe_exists(
+        &self,
+        ingredients: &mut [(Ingredient, usize)],
+        came_from: Tool,
+    ) -> Option<&Recipe> {
+        ingredients.sort_unstable_by(|a, b| a.0.cmp(&b.0));
+        match self.0.get(ingredients) {
+            Some(recipe) if recipe.uses == came_from => Some(recipe),
+            _ => None,
+        }
+    }
+}
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Recipe {
@@ -35,14 +66,14 @@ pub struct Recipe {
     discovered: bool,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
-enum Ingredient {
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub enum Ingredient {
     Alchemy(AlchemyItems),
     Element(Element),
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
-enum Element {
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub enum Element {
     Metal,
     Life,
     Water,
@@ -52,14 +83,14 @@ enum Element {
     Soul,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
-enum Tool {
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq)]
+pub enum Tool {
     Mortar,
     Cauldron,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
-enum AlchemyItems {
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub enum AlchemyItems {
     JellyNettle,
     NettleDust,
     HealthPotion,
