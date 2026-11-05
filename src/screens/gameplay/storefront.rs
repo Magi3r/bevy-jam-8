@@ -29,6 +29,8 @@ pub fn storefront_scene(level_assets: &Res<LevelAssets>) -> impl Scene {
                 @item_scene("Mortar".to_string(), "Grind stuff into other stuff".to_string(), level_assets.mortar.clone(), level_assets.mortar_highlight.clone())
             --
                 @item_scene("Book".to_string(), "Study discovered recipes".to_string(), level_assets.book_storefront.clone(), level_assets.book_highlight_storefront.clone())
+            --
+                @item_scene("Flasks".into(), "Holds one standard unit of potion.".into(), level_assets.flask.clone(), level_assets.flask_highlight.clone())
         ]
     }
 }

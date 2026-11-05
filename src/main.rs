@@ -13,7 +13,7 @@ mod menus;
 mod screens;
 mod theme;
 
-use bevy::{asset::AssetMetaCheck, prelude::*, window::WindowResolution};
+use bevy::{asset::AssetMetaCheck, camera::ScalingMode, prelude::*, window::WindowResolution};
 
 fn main() -> AppExit {
     App::new().add_plugins(AppPlugin).run()
@@ -111,5 +111,12 @@ fn spawn_camera() -> impl Scene {
         Camera {
             clear_color: ClearColorConfig::None
         }
+        Projection::Orthographic(OrthographicProjection {
+            scaling_mode: ScalingMode::Fixed {
+                width: 1920.0,
+                height: 1080.0,
+            },
+            ..OrthographicProjection::default_2d()
+        })
     }
 }

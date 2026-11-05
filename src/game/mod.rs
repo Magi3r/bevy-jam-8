@@ -1,5 +1,5 @@
 use bevy::{
-    ecs::template::OptionTemplate, image::TextureAtlasTemplate, picking::hover::Hovered, prelude::*,
+    ecs::template::OptionTemplate, image::TextureAtlasTemplate, picking::hover::Hovered, prelude::*, window::PrimaryWindow,
 };
 
 use crate::{
@@ -162,14 +162,16 @@ fn on_hover_toggle_item_tooltip(
 
 fn update_tooltip_position(
     mut messages: MessageReader<CursorMoved>,
-    mut tooltip: Query<&mut Node, With<Tooltip>>,
+    mut tooltip: Query<(&mut Node, &ComputedNode), With<Tooltip>>,
+    window: Query<&Window>,
 ) {
     if let Some(message) = messages.read().last() {
         let pos = message.position;
-        debug!("Mouse pos at {}", pos);
-        if let Ok(mut node) = tooltip.single_mut() {
-            node.left = px(pos.x + TOOLTIP_OFFSET.x);
-            node.top = px(pos.y + TOOLTIP_OFFSET.y);
+        if let Ok((mut node, computed)) = tooltip.single_mut() {
+            if let Ok(window) = window.single() {
+                node.left = px((pos.x + TOOLTIP_OFFSET.x).clamp(0.0, window.width()-computed.size.x));
+                node.top = px((pos.y + TOOLTIP_OFFSET.y).clamp(0.0, window.height()-computed.size.y));
+            }
         }
     }
 }

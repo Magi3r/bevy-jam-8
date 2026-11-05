@@ -66,6 +66,11 @@ pub struct LevelAssets {
     pub fire_ambience_sfx: Handle<AudioSource>,
     #[dependency]
     pub recipes: Handle<RecipeBook>,
+    #[dependency]
+    pub flask: Handle<Image>,
+    #[dependency]
+    pub flask_highlight: Handle<Image>,
+
 }
 
 impl FromWorld for LevelAssets {
@@ -138,6 +143,8 @@ impl FromWorld for LevelAssets {
                 assets.load("images/animation/transition/transition0011.png"),
                 assets.load("images/animation/transition/transition0012.png"),
             ],
+            flask: assets.load("images/foreground/Flask.png"),
+            flask_highlight: assets.load("images/highlight/Flask.png"),
 
             // Audio
             music: assets.load("audio/music/Fluffing A Duck.ogg"),
