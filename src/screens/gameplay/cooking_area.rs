@@ -1,12 +1,9 @@
 use bevy::prelude::*;
 
 use crate::{
-    audio::{music, sound_effect},
-    game::{
-        fire_scene, item_scene,
-        level::{LevelAssets, LevelRoot},
-    },
-    screens::{Screen::Gameplay, gameplay::ShopArea},
+    audio::{music, sound_effect}, game::{
+        fire_scene, item_scene, level::{LevelAssets, LevelRoot}, on_click_cauldron_empty,
+    }, screens::{Screen::Gameplay, gameplay::ShopArea},
 };
 
 pub(super) fn plugin(app: &mut App) {
@@ -15,6 +12,12 @@ pub(super) fn plugin(app: &mut App) {
         spawn_level.run_if(in_state(Gameplay)),
     );
 }
+
+
+
+#[derive(Component, Clone, Default)]
+pub struct Cauldron;
+
 
 #[derive(Component, Clone, Default)]
 struct CookingAreaScene;
@@ -29,6 +32,8 @@ pub fn cooking_area_scene(level_assets: &Res<LevelAssets>) -> impl Scene {
         Children [
                 @fire_scene(level_assets.fire.first().unwrap().clone(), level_assets.fire_highlight.clone())
                 --
+                Cauldron
+                on(on_click_cauldron_empty)
                 @item_scene("Cauldron".to_string(), "Put in items and hope for the best".to_string(), level_assets.cauldron.clone(), level_assets.cauldron_highlight.clone())
             --
                 @item_scene("Book".to_string(), "Study discovered recipes".to_string(), level_assets.book_cooking_area.clone(), level_assets.book_highlight_cooking_area.clone())

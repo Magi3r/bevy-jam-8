@@ -7,7 +7,7 @@
 use bevy::prelude::*;
 use std::time::Duration;
 
-use crate::{AppSystems, PausableSystems, game::level::LevelAssets, screens::gameplay::ShopArea};
+use crate::{AppSystems, PausableSystems, game::level::LevelAssets, screens::{Screen::Gameplay, gameplay::ShopArea}};
 
 pub(super) fn plugin(app: &mut App) {
     // Animate and play sound effects based on controls.
@@ -17,22 +17,22 @@ pub(super) fn plugin(app: &mut App) {
             (
                 update_fire_animation_timer,
                 update_transition_animation_timer,
+                update_cauldron_empty_animation_timer,
             )
                 .in_set(AppSystems::TickTimers),
             (
-                // update_animation_movement,
                 update_fire_animation_sprite.run_if(in_state(ShopArea::CookingArea)),
                 update_transition_animation_sprite.run_if(in_state(ShopArea::TransitionAnimation)),
-                // trigger_step_sound_effect,
+                next_state_when_transition_finished.run_if(in_state(ShopArea::TransitionAnimation)),
+                (update_cauldron_empty_animation_sprite,
+                reverse_anim_when_cauldron_empty_finished,).chain()
+
             )
                 .in_set(AppSystems::Update),
         )
             .in_set(PausableSystems),
     );
-    app.add_systems(
-        Update,
-        next_state_when_transition_finished.run_if(in_state(ShopArea::TransitionAnimation)),
-    );
+
 }
 
 /// Update the animation timer.
@@ -183,6 +183,94 @@ fn update_transition_animation_sprite(
                     animation
                         .frame
                         .clamp(0, TransitionAnimation::ANIMATION_FRAMES - 1),
+                )
+                .unwrap()
+                .clone();
+        }
+    }
+}
+
+
+/// Update the animation timer.
+fn update_cauldron_empty_animation_timer(time: Res<Time>, mut query: Query<&mut CauldronAnimation>) {
+    for mut animation in &mut query {
+        animation.update_timer(time.delta());
+    }
+}
+/// Component that tracks fire's animation state.
+#[derive(Component, Default, Clone)]
+pub struct CauldronAnimation {
+    timer: Timer,
+    frame: usize,
+    left_to_right: bool,
+}
+
+fn reverse_anim_when_cauldron_empty_finished(
+    animations: Query<(Entity, &mut CauldronAnimation)>,
+    mut commands: Commands,
+) {
+    for (entity, mut anim) in animations {
+        if anim.is_finished() {
+            if anim.left_to_right {
+                anim.left_to_right = false;
+            } else {
+                commands.entity(entity).remove::<CauldronAnimation>();
+            }
+        }
+    }
+}
+
+impl CauldronAnimation {
+    pub const ANIMATION_FRAMES: usize = 24;
+    const ANIMATION_INTERVAL: Duration = Duration::from_millis(42);
+    /// Update animation timers.
+    pub fn update_timer(&mut self, delta: Duration) {
+        self.timer.tick(delta);
+        if !self.timer.is_finished() {
+            return;
+        }
+        if self.left_to_right && self.frame < Self::ANIMATION_FRAMES {
+            self.frame += 1;
+        } else if self.frame > 0 {
+            self.frame -= 1;
+        }
+    }
+
+    /// Whether animation changed this tick.
+    pub fn changed(&self) -> bool {
+        self.timer.is_finished()
+    }
+
+    pub fn is_finished(&self) -> bool {
+        if self.left_to_right {
+            self.frame >= Self::ANIMATION_FRAMES
+        } else {
+            self.frame == 0
+        }
+    }
+
+    pub(crate) fn new() -> Self {
+        Self {
+            timer: Timer::new(Self::ANIMATION_INTERVAL, TimerMode::Repeating),
+            frame: 0,
+            left_to_right: true,
+        }
+    }
+}
+
+/// Update the texture to reflect changes in the animation.
+fn update_cauldron_empty_animation_sprite(
+    mut query: Query<(&CauldronAnimation, &mut Sprite)>,
+    level_assets: If<Res<LevelAssets>>,
+) {
+    for (animation, mut sprite) in &mut query {
+        if animation.changed() {
+            sprite.image = level_assets
+                .cauldron_empty
+                .get(
+                    animation
+                        .frame
+                        .clamp(0, CauldronAnimation::ANIMATION_FRAMES - 1),
                 )
                 .unwrap()
                 .clone();

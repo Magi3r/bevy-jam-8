@@ -3,7 +3,7 @@ use bevy::{
 };
 
 use crate::{
-    game::animation::FireAnimation, screens::Screen::Gameplay, theme::palette::BUTTON_BACKGROUND,
+    game::animation::{CauldronAnimation, FireAnimation}, screens::{Screen::Gameplay, gameplay::cooking_area::Cauldron}, theme::palette::BUTTON_BACKGROUND,
 };
 
 const TOOLTIP_OFFSET: Vec2 = Vec2::new(15.0, 15.0);
@@ -189,6 +189,14 @@ fn on_hover_show_highlight(
                 }
             }
         }
+    }
+}
+
+pub fn on_click_cauldron_empty(event: On<PointerClick>, cauldron: Query<Entity, (With<Cauldron>, Without<CauldronAnimation>)>, mut commands: Commands) {
+    // do not start cauldron animation again if its already running
+    if cauldron.get(event.entity).is_ok() {
+        commands.entity(event.entity).insert(CauldronAnimation::new());
+
     }
 }
 
