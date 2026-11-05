@@ -53,6 +53,8 @@ pub struct LevelAssets {
     #[dependency]
     pub fire: Vec<Handle<Image>>,
     #[dependency]
+    pub fire_off: Handle<Image>,
+    #[dependency]
     pub transition_animation: Vec<Handle<Image>>,
     #[dependency]
     pub mortar_highlight: Handle<Image>,
@@ -126,6 +128,7 @@ impl FromWorld for LevelAssets {
                 assets.load("images/foreground/fire/Fire0011.png"),
                 assets.load("images/foreground/fire/Fire0012.png"),
             ],
+            fire_off: assets.load("images/foreground/fire/FireOff.png"),
             fire_highlight: assets.load("images/highlight/Fire.png"),
             mortar: assets.load("images/foreground/Mortar.png"),
             mortar_highlight: assets.load("images/highlight/Mortar.png"),
@@ -157,6 +160,13 @@ impl FromWorld for LevelAssets {
     }
 }
 
+
+#[derive(Component, Default, Clone)]
+pub struct FireAmbienceSFX;
+
+#[derive(Component, Default, Clone)]
+pub struct CauldronAmbienceSFX;
+
 #[derive(Component, Default, Clone)]
 pub struct LevelRoot;
 
@@ -174,9 +184,11 @@ pub fn spawn_level(mut commands: Commands, level_assets: Res<LevelAssets>) {
         @transition_scene(true, Storefront, &level_assets)
         --
         #FireAmbienceSFX
+        FireAmbienceSFX
         @music(level_assets.fire_ambience_sfx.clone())
         --
         #CauldronAmbienceSFX
+        CauldronAmbienceSFX
         @music(level_assets.cauldron_bubbling_sfx.clone())
         // --
         // #GameplayMusic

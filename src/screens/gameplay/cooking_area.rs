@@ -2,7 +2,7 @@ use bevy::prelude::*;
 
 use crate::{
     audio::{music, sound_effect}, game::{
-        fire_scene, item_scene, level::{LevelAssets, LevelRoot}, on_click_cauldron_empty,
+        fire_scene, item_scene, level::{LevelAssets, LevelRoot}, on_click_cauldron_empty, on_click_toggle_fire_on_off,
     }, screens::{Screen::Gameplay, gameplay::ShopArea},
 };
 
@@ -18,7 +18,8 @@ pub(super) fn plugin(app: &mut App) {
 #[derive(Component, Clone, Default)]
 pub struct Cauldron;
 
-
+#[derive(Component, Clone, Default)]
+pub struct Fire(pub bool);
 #[derive(Component, Clone, Default)]
 struct CookingAreaScene;
 
@@ -30,12 +31,17 @@ pub fn cooking_area_scene(level_assets: &Res<LevelAssets>) -> impl Scene {
         Transform::from_xyz(0.0,0.0,-1.0)
         DespawnOnExit<ShopArea>(ShopArea::CookingArea)
         Children [
+                #Fire
+                Fire(true)
+                on(on_click_toggle_fire_on_off)
                 @fire_scene(level_assets.fire.first().unwrap().clone(), level_assets.fire_highlight.clone())
-                --
+            --
+                #Cauldron
                 Cauldron
                 on(on_click_cauldron_empty)
                 @item_scene("Cauldron".to_string(), "Put in items and hope for the best".to_string(), level_assets.cauldron.clone(), level_assets.cauldron_highlight.clone())
             --
+                #Book
                 @item_scene("Book".to_string(), "Study discovered recipes".to_string(), level_assets.book_cooking_area.clone(), level_assets.book_highlight_cooking_area.clone())
         ]
     }

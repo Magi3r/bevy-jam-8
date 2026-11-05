@@ -1,9 +1,15 @@
 use bevy::{
-    ecs::template::OptionTemplate, image::TextureAtlasTemplate, picking::hover::Hovered, prelude::*, window::PrimaryWindow,
+    ecs::template::OptionTemplate, image::TextureAtlasTemplate, picking::hover::Hovered,
+    prelude::*, window::PrimaryWindow,
 };
 
 use crate::{
-    game::animation::{CauldronAnimation, FireAnimation}, screens::{Screen::Gameplay, gameplay::cooking_area::Cauldron}, theme::palette::BUTTON_BACKGROUND,
+    game::{
+        animation::{CauldronAnimation, FireAnimation}, level::{CauldronAmbienceSFX, FireAmbienceSFX, LevelAssets},
+    }, screens::{
+        Screen::Gameplay,
+        gameplay::cooking_area::{Cauldron, Fire},
+    }, theme::palette::BUTTON_BACKGROUND,
 };
 
 const TOOLTIP_OFFSET: Vec2 = Vec2::new(15.0, 15.0);
@@ -82,7 +88,7 @@ pub fn fire_scene(image: Handle<Image>, highlight_image: Handle<Image>) -> impl 
         Sprite {
             image:  { image },
         }
-        Transform::from_xyz(0.0,0.0,0.0)
+        Transform::from_xyz(0.0,0.0,0.5)
         Children [
             @highlight(highlight_image)
         ]
@@ -169,8 +175,10 @@ fn update_tooltip_position(
         let pos = message.position;
         if let Ok((mut node, computed)) = tooltip.single_mut() {
             if let Ok(window) = window.single() {
-                node.left = px((pos.x + TOOLTIP_OFFSET.x).clamp(0.0, window.width()-computed.size.x));
-                node.top = px((pos.y + TOOLTIP_OFFSET.y).clamp(0.0, window.height()-computed.size.y));
+                node.left =
+                    px((pos.x + TOOLTIP_OFFSET.x).clamp(0.0, window.width() - computed.size.x));
+                node.top =
+                    px((pos.y + TOOLTIP_OFFSET.y).clamp(0.0, window.height() - computed.size.y));
             }
         }
     }
@@ -192,11 +200,49 @@ fn on_hover_show_highlight(
     }
 }
 
-pub fn on_click_cauldron_empty(event: On<PointerClick>, cauldron: Query<Entity, (With<Cauldron>, Without<CauldronAnimation>)>, mut commands: Commands) {
+pub fn on_click_cauldron_empty(
+    _event: On<PointerClick>,
+    cauldron: Query<Entity, (With<Cauldron>, Without<CauldronAnimation>)>,
+    mut commands: Commands,
+) {
     // do not start cauldron animation again if its already running
-    if cauldron.get(event.entity).is_ok() {
-        commands.entity(event.entity).insert(CauldronAnimation::new());
+    if let Ok(cauldron) = cauldron.single() {
+        commands.entity(cauldron).insert(CauldronAnimation::new());
+    }
+}
 
+pub fn on_click_toggle_fire_on_off(
+    _event: On<PointerClick>,
+    mut fire: Query<(Entity, &mut Fire, &mut Sprite)>,
+    mut commands: Commands,
+    level_assets: If<Res<LevelAssets>>,
+    fire_sfx: Query<&AudioSink, With<FireAmbienceSFX>>,
+    // cauldron_sfx: Query<&AudioSink, (With<CauldronAmbienceSFX>, Without<FireAmbienceSFX>)>,
+) {
+    // do not start cauldron animation again if its already running
+    if let Ok((entity, mut fire, mut sprite)) = fire.single_mut() {
+        if fire.0 {
+            // toggle fire off
+            fire.0 = false;
+            sprite.image = level_assets.fire_off.clone();
+            commands.entity(entity).remove::<FireAnimation>();
+            if let Ok(sink) = fire_sfx.single() {
+                sink.pause();
+            }
+            // if let Ok(sink) = cauldron_sfx.single() {
+                // sink.pause();
+            // }
+        } else {
+            // toggle fire on
+            fire.0 = true;
+            commands.entity(entity).insert(FireAnimation::new());
+            if let Ok(sink) = fire_sfx.single() {
+                sink.play();
+            }
+            // if let Ok(sink) = cauldron_sfx.single() {
+            //     sink.play();
+            // }
+        }
     }
 }
 
