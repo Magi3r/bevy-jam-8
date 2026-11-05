@@ -65,6 +65,8 @@ pub struct LevelAssets {
     #[dependency]
     pub cauldron_bubbling_sfx: Handle<AudioSource>,
     #[dependency]
+    pub cauldron_empty_sfx: Handle<AudioSource>,
+    #[dependency]
     pub fire_ambience_sfx: Handle<AudioSource>,
     #[dependency]
     pub recipes: Handle<RecipeBook>,
@@ -72,6 +74,11 @@ pub struct LevelAssets {
     pub flask: Handle<Image>,
     #[dependency]
     pub flask_highlight: Handle<Image>,
+    #[dependency]
+    pub sunflower: Handle<Image>,
+    #[dependency]
+    pub sunflower_highlight: Handle<Image>,
+
 
 }
 
@@ -148,10 +155,13 @@ impl FromWorld for LevelAssets {
             ],
             flask: assets.load("images/foreground/Flask.png"),
             flask_highlight: assets.load("images/highlight/Flask.png"),
+            sunflower: assets.load("images/foreground/Sunflower.png"),
+            sunflower_highlight: assets.load("images/highlight/Sunflower.png"),
 
             // Audio
             music: assets.load("audio/music/Fluffing A Duck.ogg"),
             cauldron_bubbling_sfx: assets.load("audio/sound_effects/boiling_cauldron.mp3"),
+            cauldron_empty_sfx: assets.load("audio/sound_effects/emptying_cauldron.mp3"),
             fire_ambience_sfx: assets
                 .load("audio/sound_effects/Fire/engyclick-firewood-burning-sound-179862.mp3"),
             // Other

@@ -43,6 +43,7 @@ pub fn cooking_area_scene(level_assets: &Res<LevelAssets>) -> impl Scene {
             --
                 #Book
                 @item_scene("Book".to_string(), "Study discovered recipes".to_string(), level_assets.book_cooking_area.clone(), level_assets.book_highlight_cooking_area.clone())
+
         ]
     }
 }

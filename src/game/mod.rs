@@ -4,7 +4,7 @@ use bevy::{
 };
 
 use crate::{
-    game::{
+    audio::sound_effect, game::{
         animation::{CauldronAnimation, FireAnimation}, level::{CauldronAmbienceSFX, FireAmbienceSFX, LevelAssets},
     }, screens::{
         Screen::Gameplay,
@@ -203,11 +203,13 @@ fn on_hover_show_highlight(
 pub fn on_click_cauldron_empty(
     _event: On<PointerClick>,
     cauldron: Query<Entity, (With<Cauldron>, Without<CauldronAnimation>)>,
+    level_assets: If<Res<LevelAssets>>,
     mut commands: Commands,
 ) {
     // do not start cauldron animation again if its already running
     if let Ok(cauldron) = cauldron.single() {
-        commands.entity(cauldron).insert(CauldronAnimation::new());
+        commands.entity(cauldron).insert_if_new(CauldronAnimation::new());
+        commands.spawn_scene(sound_effect(level_assets.cauldron_empty_sfx.clone()));
     }
 }
 
