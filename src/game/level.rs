@@ -78,6 +78,15 @@ pub struct LevelAssets {
     pub sunflower: Handle<Image>,
     #[dependency]
     pub sunflower_highlight: Handle<Image>,
+    #[dependency]
+    pub pull: Handle<Image>,
+    #[dependency]
+    pub pull_highlight: Handle<Image>,
+    #[dependency]
+    pub stirer: Vec<Handle<Image>>,
+    #[dependency]
+    pub cauldron_stir_sfx: Handle<AudioSource>,
+
 
 
 }
@@ -157,6 +166,34 @@ impl FromWorld for LevelAssets {
             flask_highlight: assets.load("images/highlight/Flask.png"),
             sunflower: assets.load("images/foreground/Sunflower.png"),
             sunflower_highlight: assets.load("images/highlight/Sunflower.png"),
+            pull: assets.load("images/foreground/Pull.png"),
+            pull_highlight: assets.load("images/highlight/Pull.png"),
+            stirer: vec![
+                assets.load("images/foreground/stirer/stirer0001.png"),
+                assets.load("images/foreground/stirer/stirer0002.png"),
+                assets.load("images/foreground/stirer/stirer0003.png"),
+                assets.load("images/foreground/stirer/stirer0004.png"),
+                assets.load("images/foreground/stirer/stirer0005.png"),
+                assets.load("images/foreground/stirer/stirer0006.png"),
+                assets.load("images/foreground/stirer/stirer0007.png"),
+                assets.load("images/foreground/stirer/stirer0008.png"),
+                assets.load("images/foreground/stirer/stirer0009.png"),
+                assets.load("images/foreground/stirer/stirer0010.png"),
+                assets.load("images/foreground/stirer/stirer0011.png"),
+                assets.load("images/foreground/stirer/stirer0012.png"),
+                assets.load("images/foreground/stirer/stirer0013.png"),
+                assets.load("images/foreground/stirer/stirer0014.png"),
+                assets.load("images/foreground/stirer/stirer0015.png"),
+                assets.load("images/foreground/stirer/stirer0016.png"),
+                assets.load("images/foreground/stirer/stirer0017.png"),
+                assets.load("images/foreground/stirer/stirer0018.png"),
+                assets.load("images/foreground/stirer/stirer0019.png"),
+                assets.load("images/foreground/stirer/stirer0020.png"),
+                assets.load("images/foreground/stirer/stirer0021.png"),
+                assets.load("images/foreground/stirer/stirer0022.png"),
+                assets.load("images/foreground/stirer/stirer0023.png"),
+                assets.load("images/foreground/stirer/stirer0024.png"),
+            ],
 
             // Audio
             music: assets.load("audio/music/Fluffing A Duck.ogg"),
@@ -164,6 +201,7 @@ impl FromWorld for LevelAssets {
             cauldron_empty_sfx: assets.load("audio/sound_effects/emptying_cauldron.mp3"),
             fire_ambience_sfx: assets
                 .load("audio/sound_effects/Fire/engyclick-firewood-burning-sound-179862.mp3"),
+            cauldron_stir_sfx: assets.load("audio/sound_effects/Kessel_Couldron/CouldronStirring.mp3"),
             // Other
             recipes: assets.load("recipes.ron"),
         }

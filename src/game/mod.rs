@@ -5,10 +5,9 @@ use bevy::{
 
 use crate::{
     audio::sound_effect, game::{
-        animation::{CauldronAnimation, FireAnimation}, level::{CauldronAmbienceSFX, FireAmbienceSFX, LevelAssets},
+        animation::{CauldronAnimation, FireAnimation, StirerAnimation}, level::{CauldronAmbienceSFX, FireAmbienceSFX, LevelAssets},
     }, screens::{
-        Screen::Gameplay,
-        gameplay::cooking_area::{Cauldron, Fire},
+        Screen::Gameplay, gameplay::cooking_area::{Cauldron, Fire, Stirer},
     }, theme::palette::BUTTON_BACKGROUND,
 };
 
@@ -210,6 +209,19 @@ pub fn on_click_cauldron_empty(
     if let Ok(cauldron) = cauldron.single() {
         commands.entity(cauldron).insert_if_new(CauldronAnimation::new());
         commands.spawn_scene(sound_effect(level_assets.cauldron_empty_sfx.clone()));
+    }
+}
+
+pub fn on_click_stir_cauldron(
+    _event: On<PointerClick>,
+    stirer: Query<Entity, (With<Stirer>, Without<StirerAnimation>)>,
+    level_assets: If<Res<LevelAssets>>,
+    mut commands: Commands,
+) {
+    // do not start cauldron animation again if its already running
+    if let Ok(stirer) = stirer.single() {
+        commands.entity(stirer).insert_if_new(StirerAnimation::new());
+        commands.spawn_scene(sound_effect(level_assets.cauldron_stir_sfx.clone()));
     }
 }
 

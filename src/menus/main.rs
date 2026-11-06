@@ -8,6 +8,7 @@ pub(super) fn plugin(app: &mut App) {
     app.add_systems(OnEnter(Menu::Main), spawn_main_menu.spawn());
 }
 
+
 fn spawn_main_menu() -> impl Scene {
     bsn! {
         @widget::ui_root("Main Menu")

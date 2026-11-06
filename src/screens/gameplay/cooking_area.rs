@@ -2,7 +2,7 @@ use bevy::prelude::*;
 
 use crate::{
     audio::{music, sound_effect}, game::{
-        fire_scene, item_scene, level::{LevelAssets, LevelRoot}, on_click_cauldron_empty, on_click_toggle_fire_on_off,
+        fire_scene, item_scene, level::{LevelAssets, LevelRoot}, on_click_cauldron_empty, on_click_stir_cauldron, on_click_toggle_fire_on_off,
     }, screens::{Screen::Gameplay, gameplay::ShopArea},
 };
 
@@ -14,6 +14,11 @@ pub(super) fn plugin(app: &mut App) {
 }
 
 
+#[derive(Component, Clone, Default)]
+pub struct Pull;
+
+#[derive(Component, Clone, Default)]
+pub struct Stirer;
 
 #[derive(Component, Clone, Default)]
 pub struct Cauldron;
@@ -38,12 +43,21 @@ pub fn cooking_area_scene(level_assets: &Res<LevelAssets>) -> impl Scene {
             --
                 #Cauldron
                 Cauldron
-                on(on_click_cauldron_empty)
+                on(on_click_stir_cauldron)
                 @item_scene("Cauldron".to_string(), "Put in items and hope for the best".to_string(), level_assets.cauldron.clone(), level_assets.cauldron_highlight.clone())
+            --
+                #Stirer
+                Stirer
+                Sprite {image: {level_assets.stirer.first().unwrap().clone()}}
+                Transform::from_xyz(0.0,0.0,2.0)
             --
                 #Book
                 @item_scene("Book".to_string(), "Study discovered recipes".to_string(), level_assets.book_cooking_area.clone(), level_assets.book_highlight_cooking_area.clone())
-
+            --
+                #Pull
+                Pull
+                on(on_click_cauldron_empty)
+                @item_scene("Pull".to_string(), "Pull to flush".to_string(), level_assets.pull.clone(), level_assets.pull_highlight.clone())
         ]
     }
 }
