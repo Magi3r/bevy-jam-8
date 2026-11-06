@@ -7,7 +7,7 @@ use bevy::{audio::Volume, input::common_conditions::input_just_pressed, prelude:
 use crate::{menus::Menu, screens::Screen, theme::prelude::*};
 
 pub(super) fn plugin(app: &mut App) {
-    app.add_systems(OnEnter(Menu::Settings), spawn_settings_menu.spawn());
+    app.add_systems(OnEnter(Menu::Settings), spawn_settings_menu);
     app.add_systems(
         Update,
         go_back.run_if(in_state(Menu::Settings).and_then(input_just_pressed(KeyCode::Escape))),
@@ -19,22 +19,25 @@ pub(super) fn plugin(app: &mut App) {
     );
 }
 
-fn spawn_settings_menu() -> impl Scene {
-    bsn! {
+fn spawn_settings_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
+    let button_image = asset_server.load("images/gui/Button.png");
+    let highlight = asset_server.load("images/gui/Button_Highlight.png");
+
+    commands.spawn_scene(bsn! {
         @widget::ui_root("Settings Menu")
         GlobalZIndex(2)
         DespawnOnExit<Menu>(Menu::Settings)
         Children [
             @widget::header("Settings")
             --
-            @settings_grid()
+            @settings_grid(asset_server)
             --
-            @widget::button("Back", go_back_on_click)
+            @widget::button("Back", go_back_on_click, button_image.clone(), highlight.clone())
         ]
-    }
+    });
 }
 
-fn settings_grid() -> impl Scene {
+fn settings_grid(asset_server: Res<AssetServer>) -> impl Scene {
     let cols: Vec<RepeatedGridTrack> = RepeatedGridTrack::px(2, 400.0);
 
     bsn! {
@@ -51,19 +54,22 @@ fn settings_grid() -> impl Scene {
                 justify_self: JustifySelf::End,
             }
             --
-            @global_volume_widget()
+            @global_volume_widget(asset_server)
         ]
     }
 }
 
-fn global_volume_widget() -> impl Scene {
+fn global_volume_widget(asset_server: Res<AssetServer>) -> impl Scene {
+    let button_image = asset_server.load("images/gui/ButtonSmall.png");
+    let highlight = asset_server.load("images/gui/ButtonSmall_Highlight.png");
+
     bsn! {
         #GlobalVolumeWidget
         Node {
             justify_self: JustifySelf::Start,
         }
         Children [
-            @widget::button_small("-", lower_global_volume)
+            @widget::button_small("-", lower_global_volume, button_image.clone(), highlight.clone())
             --
             #CurrentVolume
             Node {
@@ -75,7 +81,7 @@ fn global_volume_widget() -> impl Scene {
                 GlobalVolumeLabel
             ]
             --
-            @widget::button_small("+", raise_global_volume)
+            @widget::button_small("+", raise_global_volume, button_image.clone(), highlight.clone())
         ]
     }
 }

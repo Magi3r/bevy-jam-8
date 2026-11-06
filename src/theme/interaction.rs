@@ -16,56 +16,56 @@ pub(super) fn plugin(app: &mut App) {
 /// Palette for widget interactions. Add this to an entity that supports
 /// [`Interaction`]s, such as a button, to change its [`BackgroundColor`] based
 /// on the current interaction state.
-#[derive(Component, Debug, Reflect, Clone, Default)]
+#[derive(Component, Debug, Reflect, Clone, Default, FromTemplate)]
 #[reflect(Component)]
 pub struct InteractionPalette {
-    pub none: Color,
-    pub hovered: Color,
-    pub pressed: Color,
+    pub none: Handle<Image>,
+    pub hovered: Handle<Image>,
+    pub pressed: Handle<Image>,
 }
 
 fn apply_interaction_palette_on_click(
     click: On<PointerClick>,
-    mut palette_query: Query<(&InteractionPalette, &mut BackgroundColor)>,
+    mut palette_query: Query<(&InteractionPalette, &mut ImageNode)>,
 ) {
-    let Ok((palette, mut bg)) = palette_query.get_mut(click.event_target()) else {
+    let Ok((palette, mut image)) = palette_query.get_mut(click.event_target()) else {
         return;
     };
 
-    *bg = palette.pressed.into();
+    image.image = palette.pressed.clone();
 }
 
 fn apply_interaction_palette_on_release(
     click: On<PointerRelease>,
-    mut palette_query: Query<(&InteractionPalette, &mut BackgroundColor)>,
+    mut palette_query: Query<(&InteractionPalette, &mut ImageNode)>,
 ) {
-    let Ok((palette, mut bg)) = palette_query.get_mut(click.event_target()) else {
+    let Ok((palette, mut image)) = palette_query.get_mut(click.event_target()) else {
         return;
     };
 
-    *bg = palette.hovered.into();
+    image.image = palette.hovered.clone();
 }
 
 fn apply_interaction_palette_on_over(
     over: On<PointerOver>,
-    mut palette_query: Query<(&InteractionPalette, &mut BackgroundColor)>,
+    mut palette_query: Query<(&InteractionPalette, &mut ImageNode)>,
 ) {
-    let Ok((palette, mut bg)) = palette_query.get_mut(over.event_target()) else {
+    let Ok((palette, mut image)) = palette_query.get_mut(over.event_target()) else {
         return;
     };
 
-    *bg = palette.hovered.into();
+    image.image = palette.hovered.clone();
 }
 
 fn apply_interaction_palette_on_out(
     out: On<PointerOut>,
-    mut palette_query: Query<(&InteractionPalette, &mut BackgroundColor)>,
+    mut palette_query: Query<(&InteractionPalette, &mut ImageNode)>,
 ) {
-    let Ok((palette, mut bg)) = palette_query.get_mut(out.event_target()) else {
+    let Ok((palette, mut image)) = palette_query.get_mut(out.event_target()) else {
         return;
     };
 
-    *bg = palette.none.into();
+    image.image = palette.none.clone();
 }
 
 #[derive(Resource, Asset, Clone, Reflect)]

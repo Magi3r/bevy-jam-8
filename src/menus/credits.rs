@@ -5,7 +5,7 @@ use bevy::{input::common_conditions::input_just_pressed, prelude::*};
 use crate::{asset_tracking::LoadResource, audio::music, menus::Menu, theme::prelude::*};
 
 pub(super) fn plugin(app: &mut App) {
-    app.add_systems(OnEnter(Menu::Credits), spawn_credits_menu.spawn());
+    app.add_systems(OnEnter(Menu::Credits), spawn_credits_menu);
     app.add_systems(
         Update,
         go_back.run_if(in_state(Menu::Credits).and_then(input_just_pressed(KeyCode::Escape))),
@@ -15,8 +15,11 @@ pub(super) fn plugin(app: &mut App) {
     app.add_systems(OnEnter(Menu::Credits), start_credits_music);
 }
 
-fn spawn_credits_menu() -> impl Scene {
-    bsn! {
+fn spawn_credits_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
+    let button_image = asset_server.load("images/gui/Button.png");
+    let highlight = asset_server.load("images/gui/Button_Highlight.png");
+
+    commands.spawn_scene(bsn! {
         @widget::ui_root("Credits Menu")
         GlobalZIndex(2)
         DespawnOnExit<Menu>(Menu::Credits)
@@ -29,9 +32,9 @@ fn spawn_credits_menu() -> impl Scene {
             --
             @assets()
             --
-            @widget::button("Back", go_back_on_click)
+            @widget::button("Back", go_back_on_click, button_image.clone(), highlight.clone())
         ]
-    }
+    });
 }
 
 fn created_by() -> impl Scene {

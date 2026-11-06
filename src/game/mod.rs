@@ -4,11 +4,16 @@ use bevy::{
 };
 
 use crate::{
-    audio::sound_effect, game::{
-        animation::{CauldronAnimation, FireAnimation, StirerAnimation}, level::{CauldronAmbienceSFX, FireAmbienceSFX, LevelAssets},
-    }, screens::{
-        Screen::Gameplay, gameplay::cooking_area::{Cauldron, Fire, Stirer},
-    }, theme::palette::BUTTON_BACKGROUND,
+    audio::sound_effect,
+    game::{
+        animation::{CauldronAnimation, FireAnimation, StirerAnimation},
+        level::{CauldronAmbienceSFX, FireAmbienceSFX, LevelAssets},
+    },
+    screens::{
+        Screen::Gameplay,
+        gameplay::cooking_area::{Cauldron, Fire, Stirer},
+    },
+    theme::palette::BUTTON_BACKGROUND,
 };
 
 const TOOLTIP_OFFSET: Vec2 = Vec2::new(15.0, 15.0);
@@ -102,15 +107,16 @@ fn tooltip() -> impl Scene {
         Tooltip
         Node {
             position_type: PositionType::Absolute,
-            // width: px(200),
-            // height: px(60),
+            height: px(150),
+            width: px(600),
             justify_content: JustifyContent::Center,
             align_items: AlignItems::Center,
             padding: UiRect::all(px(10)),
             flex_direction: FlexDirection::Column,
             row_gap: px(5),
         }
-        BackgroundColor(BUTTON_BACKGROUND)
+        // BackgroundColor(BUTTON_BACKGROUND)
+        ImageNode {image:"images/gui/Popup_Highlight.png"}
         Children [
             #ItemName
             TooltipTitle
@@ -207,7 +213,9 @@ pub fn on_click_cauldron_empty(
 ) {
     // do not start cauldron animation again if its already running
     if let Ok(cauldron) = cauldron.single() {
-        commands.entity(cauldron).insert_if_new(CauldronAnimation::new());
+        commands
+            .entity(cauldron)
+            .insert_if_new(CauldronAnimation::new());
         commands.spawn_scene(sound_effect(level_assets.cauldron_empty_sfx.clone()));
     }
 }
@@ -220,7 +228,9 @@ pub fn on_click_stir_cauldron(
 ) {
     // do not start cauldron animation again if its already running
     if let Ok(stirer) = stirer.single() {
-        commands.entity(stirer).insert_if_new(StirerAnimation::new());
+        commands
+            .entity(stirer)
+            .insert_if_new(StirerAnimation::new());
         commands.spawn_scene(sound_effect(level_assets.cauldron_stir_sfx.clone()));
     }
 }
@@ -244,7 +254,7 @@ pub fn on_click_toggle_fire_on_off(
                 sink.pause();
             }
             // if let Ok(sink) = cauldron_sfx.single() {
-                // sink.pause();
+            // sink.pause();
             // }
         } else {
             // toggle fire on

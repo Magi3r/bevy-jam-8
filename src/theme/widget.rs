@@ -3,6 +3,7 @@
 use std::borrow::Cow;
 
 use bevy::{ecs::system::IntoObserverSystem, prelude::*};
+use bevy_inspector_egui::egui::epaint::text::FontPriority::Highest;
 
 use crate::theme::{interaction::InteractionPalette, palette::*};
 
@@ -46,7 +47,12 @@ pub fn label(text: impl Into<String>) -> impl Scene {
 }
 
 /// A large rounded button with text and an action defined as an [`Observer`].
-pub fn button<E, M, I>(text: impl Into<String>, action: I) -> impl Scene
+pub fn button<E, M, I>(
+    text: impl Into<String>,
+    action: I,
+    image: Handle<Image>,
+    highlight: Handle<Image>,
+) -> impl Scene
 where
     E: EntityEvent,
     I: IntoObserverSystem<E, M, ()> + Clone + Sync,
@@ -57,18 +63,24 @@ where
         action,
         bsn! {
             Node {
-                width: px(380),
-                height: px(80),
+                width: px(1920),
+                height: px(175),
                 align_items: AlignItems::Center,
                 justify_content: JustifyContent::Center,
-                border_radius: BorderRadius::MAX,
             }
         },
+        image,
+        highlight,
     )
 }
 
 /// A small square button with text and an action defined as an [`Observer`].
-pub fn button_small<E, M, I>(text: impl Into<String>, action: I) -> impl Scene
+pub fn button_small<E, M, I>(
+    text: impl Into<String>,
+    action: I,
+    image: Handle<Image>,
+    highlight: Handle<Image>,
+) -> impl Scene
 where
     E: EntityEvent,
     I: IntoObserverSystem<E, M, ()> + Clone + Sync,
@@ -79,23 +91,32 @@ where
         action,
         bsn! {
             Node {
-                width: px(30),
-                height: px(30),
+                width: px(100),
+                height: px(125),
                 align_items: AlignItems::Center,
                 justify_content: JustifyContent::Center,
             }
         },
+        image,
+        highlight,
     )
 }
 
 /// A simple button with text and an action defined as an [`Observer`]. The button's layout is provided by `button_bundle`.
-fn button_base<E, M, I>(text: impl Into<String>, action: I, button_bundle: impl Scene) -> impl Scene
+fn button_base<E, M, I>(
+    text: impl Into<String>,
+    action: I,
+    button_bundle: impl Scene,
+    image: Handle<Image>,
+    highlight: Handle<Image>,
+) -> impl Scene
 where
     E: EventPattern<Event: EntityEvent>,
     I: IntoObserverSystem<E, M, ()> + Clone + Sync,
     M: 'static,
 {
     let text = text.into();
+    let pressed = highlight.clone();
 
     bsn! {
         #Button
@@ -103,12 +124,16 @@ where
         Children [
             #ButtonInner
             // Button
-            BackgroundColor(BUTTON_BACKGROUND)
+            // BackgroundColor(BUTTON_BACKGROUND)
+
+            ImageNode {image: "images/gui/Button.png"}
+
             InteractionPalette {
-                none: BUTTON_BACKGROUND,
-                hovered: BUTTON_HOVERED_BACKGROUND,
-                pressed: BUTTON_PRESSED_BACKGROUND,
+                none: image,
+                hovered: highlight,
+                pressed: pressed,
             }
+
             Children [
                 #ButtonText
                 Text(text)
