@@ -5,6 +5,7 @@
 //! - [Timers](https://github.com/bevyengine/bevy/blob/latest/examples/time/timers.rs)
 
 use bevy::prelude::*;
+use tracing::Level;
 use std::time::Duration;
 
 use crate::{AppSystems, PausableSystems, game::level::LevelAssets, screens::{Screen::Gameplay, gameplay::{ShopArea::{self, CookingArea}, cooking_area::Stirer}}};
@@ -209,15 +210,19 @@ pub struct CauldronAnimation {
 }
 
 fn reverse_anim_when_cauldron_empty_finished(
-    animations: Query<(Entity, &mut CauldronAnimation)>,
+    animations: Query<(Entity, &mut CauldronAnimation, &mut Sprite)>,
+    mut stirer: Query<&mut Visibility, With<Stirer>>,
+    level_assets: Res<LevelAssets>,
     mut commands: Commands,
 ) {
-    for (entity, mut anim) in animations {
+    for (entity, mut anim, mut sprite) in animations {
         if anim.is_finished() {
             if anim.left_to_right {
                 anim.left_to_right = false;
             } else {
+                *stirer.single_mut().unwrap() = Visibility::Visible;
                 commands.entity(entity).remove::<CauldronAnimation>();
+                sprite.image = level_assets.cauldron.clone();
             }
         }
     }
