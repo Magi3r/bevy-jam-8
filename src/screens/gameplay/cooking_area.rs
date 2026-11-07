@@ -1,9 +1,13 @@
 use bevy::prelude::*;
 
 use crate::{
-    audio::{music, sound_effect}, game::{
-        fire_scene, item_scene, level::{LevelAssets, LevelRoot}, on_click_cauldron_empty, on_click_stir_cauldron, on_click_toggle_fire_on_off,
-    }, screens::{Screen::Gameplay, gameplay::ShopArea},
+    audio::{music, sound_effect},
+    game::{
+        fire_scene, item_scene,
+        level::{LevelAssets, LevelRoot},
+        on_click_cauldron_empty, on_click_stir_cauldron, on_click_toggle_fire_on_off,
+    },
+    screens::{Screen::Gameplay, gameplay::ShopArea},
 };
 
 pub(super) fn plugin(app: &mut App) {
@@ -12,7 +16,6 @@ pub(super) fn plugin(app: &mut App) {
         spawn_level.run_if(in_state(Gameplay)),
     );
 }
-
 
 #[derive(Component, Clone, Default)]
 pub struct Pull;
@@ -36,6 +39,9 @@ pub fn cooking_area_scene(level_assets: &Res<LevelAssets>) -> impl Scene {
         Transform::from_xyz(0.0,0.0,-1.0)
         DespawnOnExit<ShopArea>(ShopArea::CookingArea)
         Children [
+                Sprite {image: {level_assets.deep_background_cooking_area.clone()}}
+                Transform::from_xyz(0.0,0.0,-2.0)
+            --
                 #Fire
                 Fire(true)
                 on(on_click_toggle_fire_on_off)

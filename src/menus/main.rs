@@ -16,6 +16,7 @@ fn spawn_main_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
         @widget::ui_root("Main Menu")
         GlobalZIndex(2)
         DespawnOnExit<Menu>(Menu::Main)
+        Sprite {image: "images/gui/TitleScreen.png"}
         Children [
             @widget::button("Play", enter_loading_or_gameplay_screen, button_image.clone(), highlight.clone())
             --

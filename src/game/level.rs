@@ -35,7 +35,11 @@ pub struct LevelAssets {
     #[dependency]
     pub background_storefront: Handle<Image>,
     #[dependency]
+    pub deep_background_storefront: Handle<Image>,
+    #[dependency]
     pub background_cooking_area: Handle<Image>,
+    #[dependency]
+    pub deep_background_cooking_area: Handle<Image>,
     #[dependency]
     pub book_storefront: Handle<Image>,
     #[dependency]
@@ -94,7 +98,9 @@ impl FromWorld for LevelAssets {
         Self {
             // Images
             background_cooking_area: assets.load("images/background/Background_0.png"),
+            deep_background_cooking_area: assets.load("images/background/DeepBackground_0.png"),
             background_storefront: assets.load("images/background/Background_1.png"),
+            deep_background_storefront: assets.load("images/background/DeepBackground_1.png"),
             book_cooking_area: assets.load("images/foreground/Book_0.png"),
             book_storefront: assets.load("images/foreground/Book_1.png"),
             book_highlight_cooking_area: assets.load("images/highlight/Book_0.png"),
