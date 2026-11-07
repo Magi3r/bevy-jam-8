@@ -91,8 +91,8 @@ where
         action,
         bsn! {
             Node {
-                width: px(100),
-                height: px(125),
+                width: px(125),
+                height: px(100),
                 align_items: AlignItems::Center,
                 justify_content: JustifyContent::Center,
             }
@@ -117,6 +117,7 @@ where
 {
     let text = text.into();
     let pressed = highlight.clone();
+    let image_node = image.clone();
 
     bsn! {
         #Button
@@ -126,7 +127,7 @@ where
             // Button
             // BackgroundColor(BUTTON_BACKGROUND)
 
-            ImageNode {image: "images/gui/Button.png"}
+            ImageNode {image : image_node}
 
             InteractionPalette {
                 none: image,

@@ -47,6 +47,7 @@ fn settings_grid(asset_server: Res<AssetServer>) -> impl Scene {
             row_gap: px(10),
             column_gap: px(30),
             grid_template_columns: cols,
+            align_items: AlignItems::Center,
         }
         Children [
             @widget::label("Master Volume")
@@ -73,7 +74,8 @@ fn global_volume_widget(asset_server: Res<AssetServer>) -> impl Scene {
             --
             #CurrentVolume
             Node {
-                padding: UiRect::horizontal(px(10)),
+                padding: UiRect::horizontal(px(20)),
+                align_items: AlignItems::Center,
                 justify_content: JustifyContent::Center,
             }
             Children [
