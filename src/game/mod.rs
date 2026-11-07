@@ -6,12 +6,15 @@ use bevy::{
 use crate::{
     audio::sound_effect,
     game::{
-        animation::{CauldronAnimation, FireAnimation, StirerAnimation},
+        animation::{CauldronAnimation, FireAnimation, MortarAnimation, StirerAnimation},
         level::{CauldronAmbienceSFX, FireAmbienceSFX, LevelAssets},
     },
     screens::{
         Screen::Gameplay,
-        gameplay::cooking_area::{Cauldron, Fire, Stirer},
+        gameplay::{
+            cooking_area::{Cauldron, Fire, Stirer},
+            storefront::Mortar,
+        },
     },
     theme::palette::BUTTON_BACKGROUND,
 };
@@ -231,13 +234,27 @@ pub fn on_click_stir_cauldron(
 ) {
     // do not start stiring if cauldron animation already running
     if !cauldron_animation.is_empty() {
-        return
+        return;
     }
     if let Ok(stirer) = stirer.single() {
         commands
             .entity(stirer)
             .insert_if_new(StirerAnimation::new());
         commands.spawn_scene(sound_effect(level_assets.cauldron_stir_sfx.clone()));
+    }
+}
+
+pub fn on_click_morter(
+    _event: On<PointerClick>,
+    mortar: Query<Entity, (With<Mortar>, Without<MortarAnimation>)>,
+    level_assets: If<Res<LevelAssets>>,
+    mut commands: Commands,
+) {
+    if let Ok(mortar) = mortar.single() {
+        commands
+            .entity(mortar)
+            .insert_if_new(MortarAnimation::new());
+        // commands.spawn_scene(sound_effect(level_assets.cauldron_stir_sfx.clone()));
     }
 }
 

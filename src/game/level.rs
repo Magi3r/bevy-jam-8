@@ -41,7 +41,7 @@ pub struct LevelAssets {
     #[dependency]
     pub book_cooking_area: Handle<Image>,
     #[dependency]
-    pub mortar: Handle<Image>,
+    pub mortar: Vec<Handle<Image>>,
     #[dependency]
     pub book_highlight_cooking_area: Handle<Image>,
     #[dependency]
@@ -86,9 +86,6 @@ pub struct LevelAssets {
     pub stirer: Vec<Handle<Image>>,
     #[dependency]
     pub cauldron_stir_sfx: Handle<AudioSource>,
-
-
-
 }
 
 impl FromWorld for LevelAssets {
@@ -146,7 +143,32 @@ impl FromWorld for LevelAssets {
             ],
             fire_off: assets.load("images/foreground/fire/FireOff.png"),
             fire_highlight: assets.load("images/highlight/Fire.png"),
-            mortar: assets.load("images/foreground/Mortar.png"),
+            mortar: vec![
+                assets.load("images/foreground/mortar/Mortar0001.png"),
+                assets.load("images/foreground/mortar/Mortar0002.png"),
+                assets.load("images/foreground/mortar/Mortar0003.png"),
+                assets.load("images/foreground/mortar/Mortar0004.png"),
+                assets.load("images/foreground/mortar/Mortar0005.png"),
+                assets.load("images/foreground/mortar/Mortar0006.png"),
+                assets.load("images/foreground/mortar/Mortar0007.png"),
+                assets.load("images/foreground/mortar/Mortar0008.png"),
+                assets.load("images/foreground/mortar/Mortar0009.png"),
+                assets.load("images/foreground/mortar/Mortar0010.png"),
+                assets.load("images/foreground/mortar/Mortar0011.png"),
+                assets.load("images/foreground/mortar/Mortar0012.png"),
+                assets.load("images/foreground/mortar/Mortar0001.png"),
+                assets.load("images/foreground/mortar/Mortar0002.png"),
+                assets.load("images/foreground/mortar/Mortar0003.png"),
+                assets.load("images/foreground/mortar/Mortar0004.png"),
+                assets.load("images/foreground/mortar/Mortar0005.png"),
+                assets.load("images/foreground/mortar/Mortar0006.png"),
+                assets.load("images/foreground/mortar/Mortar0007.png"),
+                assets.load("images/foreground/mortar/Mortar0008.png"),
+                assets.load("images/foreground/mortar/Mortar0009.png"),
+                assets.load("images/foreground/mortar/Mortar0010.png"),
+                assets.load("images/foreground/mortar/Mortar0011.png"),
+                assets.load("images/foreground/mortar/Mortar0012.png"),
+            ],
             mortar_highlight: assets.load("images/highlight/Mortar.png"),
             transition_animation: vec![
                 assets.load("images/animation/transition/transition0001.png"),
@@ -201,13 +223,13 @@ impl FromWorld for LevelAssets {
             cauldron_empty_sfx: assets.load("audio/sound_effects/emptying_cauldron.mp3"),
             fire_ambience_sfx: assets
                 .load("audio/sound_effects/Fire/engyclick-firewood-burning-sound-179862.mp3"),
-            cauldron_stir_sfx: assets.load("audio/sound_effects/Kessel_Couldron/CouldronStirring.mp3"),
+            cauldron_stir_sfx: assets
+                .load("audio/sound_effects/Kessel_Couldron/CouldronStirring.mp3"),
             // Other
             recipes: assets.load("recipes.ron"),
         }
     }
 }
-
 
 #[derive(Component, Default, Clone)]
 pub struct FireAmbienceSFX;

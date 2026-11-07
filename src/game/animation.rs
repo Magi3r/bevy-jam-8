@@ -5,10 +5,20 @@
 //! - [Timers](https://github.com/bevyengine/bevy/blob/latest/examples/time/timers.rs)
 
 use bevy::prelude::*;
-use tracing::Level;
 use std::time::Duration;
+use tracing::Level;
 
-use crate::{AppSystems, PausableSystems, game::level::LevelAssets, screens::{Screen::Gameplay, gameplay::{ShopArea::{self, CookingArea}, cooking_area::Stirer}}};
+use crate::{
+    AppSystems, PausableSystems,
+    game::level::LevelAssets,
+    screens::{
+        Screen::Gameplay,
+        gameplay::{
+            ShopArea::{self, CookingArea, Storefront},
+            cooking_area::Stirer,
+        },
+    },
+};
 
 pub(super) fn plugin(app: &mut App) {
     // Animate and play sound effects based on controls.
@@ -20,23 +30,36 @@ pub(super) fn plugin(app: &mut App) {
                 update_transition_animation_timer,
                 update_cauldron_empty_animation_timer,
                 update_stirer_animation_timer,
+                update_mortar_animation_timer,
             )
                 .in_set(AppSystems::TickTimers),
             (
                 update_fire_animation_sprite.run_if(in_state(ShopArea::CookingArea)),
                 update_transition_animation_sprite.run_if(in_state(ShopArea::TransitionAnimation)),
                 next_state_when_transition_finished.run_if(in_state(ShopArea::TransitionAnimation)),
-                (update_cauldron_empty_animation_sprite,
-                reverse_anim_when_cauldron_empty_finished,).chain().run_if(in_state(ShopArea::CookingArea)),
-                (update_stirer_animation_sprite,remove_component_when_animation_finished).chain().run_if(in_state(ShopArea::CookingArea))
-
-
+                (
+                    update_cauldron_empty_animation_sprite,
+                    reverse_anim_when_cauldron_empty_finished,
+                )
+                    .chain()
+                    .run_if(in_state(ShopArea::CookingArea)),
+                (
+                    update_stirer_animation_sprite,
+                    remove_component_when_animation_finished,
+                )
+                    .chain()
+                    .run_if(in_state(ShopArea::CookingArea)),
+                (
+                    update_mortar_animation_sprite,
+                    remove_component_when_animation_finished_mortar,
+                )
+                    .chain()
+                    .run_if(in_state(ShopArea::Storefront)),
             )
                 .in_set(AppSystems::Update),
         )
             .in_set(PausableSystems),
     );
-
 }
 
 /// Update the animation timer.
@@ -194,9 +217,11 @@ fn update_transition_animation_sprite(
     }
 }
 
-
 /// Update the animation timer.
-fn update_cauldron_empty_animation_timer(time: Res<Time>, mut query: Query<&mut CauldronAnimation>) {
+fn update_cauldron_empty_animation_timer(
+    time: Res<Time>,
+    mut query: Query<&mut CauldronAnimation>,
+) {
     for mut animation in &mut query {
         animation.update_timer(time.delta());
     }
@@ -320,7 +345,6 @@ impl StirerAnimation {
 
     pub fn is_finished(&self) -> bool {
         self.frame >= Self::ANIMATION_FRAMES
-
     }
 
     pub(crate) fn new() -> Self {
@@ -352,7 +376,7 @@ fn update_stirer_animation_sprite(
 }
 
 fn remove_component_when_animation_finished(
-    transitions: Query<(Entity,&StirerAnimation)>,
+    transitions: Query<(Entity, &StirerAnimation)>,
     mut commands: Commands,
 ) {
     for (entity, anim) in transitions {
@@ -362,6 +386,80 @@ fn remove_component_when_animation_finished(
     }
 }
 
+/// Update the animation timer.
+fn update_mortar_animation_timer(time: Res<Time>, mut query: Query<&mut MortarAnimation>) {
+    for mut animation in &mut query {
+        animation.update_timer(time.delta());
+    }
+}
+/// Component that tracks fire's animation state.
+#[derive(Component, Default, Clone)]
+pub struct MortarAnimation {
+    timer: Timer,
+    frame: usize,
+}
+
+impl MortarAnimation {
+    pub const ANIMATION_FRAMES: usize = 24;
+    const ANIMATION_INTERVAL: Duration = Duration::from_millis(42);
+    /// Update animation timers.
+    pub fn update_timer(&mut self, delta: Duration) {
+        self.timer.tick(delta);
+        if !self.timer.is_finished() {
+            return;
+        }
+        if self.frame < Self::ANIMATION_FRAMES {
+            self.frame += 1;
+        }
+    }
+
+    /// Whether animation changed this tick.
+    pub fn changed(&self) -> bool {
+        self.timer.is_finished()
+    }
+
+    pub fn is_finished(&self) -> bool {
+        self.frame >= Self::ANIMATION_FRAMES
+    }
+
+    pub(crate) fn new() -> Self {
+        Self {
+            timer: Timer::new(Self::ANIMATION_INTERVAL, TimerMode::Repeating),
+            frame: 0,
+        }
+    }
+}
+
+/// Update the texture to reflect changes in the animation.
+fn update_mortar_animation_sprite(
+    mut query: Query<(&MortarAnimation, &mut Sprite)>,
+    level_assets: If<Res<LevelAssets>>,
+) {
+    for (animation, mut sprite) in &mut query {
+        if animation.changed() {
+            sprite.image = level_assets
+                .mortar
+                .get(
+                    animation
+                        .frame
+                        .clamp(0, MortarAnimation::ANIMATION_FRAMES - 1),
+                )
+                .unwrap()
+                .clone();
+        }
+    }
+}
+
+fn remove_component_when_animation_finished_mortar(
+    transitions: Query<(Entity, &MortarAnimation)>,
+    mut commands: Commands,
+) {
+    for (entity, anim) in transitions {
+        if anim.is_finished() {
+            commands.entity(entity).remove::<MortarAnimation>();
+        }
+    }
+}
 
 // /// If the player is moving, play a step sound effect synchronized with the
 // /// animation.
