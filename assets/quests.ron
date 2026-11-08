@@ -7,7 +7,8 @@ Quest (
     npc_text_start: "Migthy witch, you and your cauldron must surely be capable of great things. I was bitten by wolfs, may you be able to help me? I can only offer these herbs I found. I am sure they will help you.",
     npc_voice_finish: "audio/sound_effects/VoiceLinesCrunch/Part2_Wanderer_Crushed.wav",
     npc_text_finish: "Thank you, kind witch. I will tell of your deeds where ever I go.",
-    unlocks: JellyNettle,
+    unlocks: [JellyNettle, Sunflower, IcyLilly],
+    provides: [JellyNettle, Sunflower, IcyLilly],
     requests: Item(HealthPotion),
     started: false,
     finished: false
@@ -20,7 +21,8 @@ Quest (
     npc_text_start: "You there. I have heard you can do magic. Can you show me a big explosion? ",
     npc_voice_finish: "audio/sound_effects/VoiceLinesCrunch/Part1_Child_Crushed.wav",
     npc_text_finish: "Waow, that was amazing. I'm gonna tell all my friends about it.",
-    unlocks: JellyNettle,
+    unlocks: [],
+    provides: [],
     requests: Effect(Explosion),
     started: false,
     finished: false
@@ -33,8 +35,9 @@ Quest (
     npc_text_start: "I come to you in time of need, oh, great alchemist. The orb I use to ponder has become dull and useless. Without it I cannot protect the kingdom from comming threats. How am I to protect the kingdom with an orb that only shows me things which are boring to ponder.",
     npc_voice_finish: "audio/sound_effects/VoiceLinesCrunch/Part2_OldWizard_Crushed.wav",
     npc_text_finish: "Ah thank you young one. Now that my orb of pondering is clear once more, it may show me the exciting lifes of the rat king and his rebellion again.",
-    unlocks: JellyNettle,
-    requests: Item(JellyNettle),
+    unlocks: [],
+    provides: [OrbUnclear],
+    requests: Item(OrbClear),
     started: false,
     finished: false
 ),
@@ -46,8 +49,9 @@ Quest (
     npc_text_start: "Hello, my friend told me, you can do magic. Can you help me fix my friend. Mr. Snowman is melting. Can you please fix him.",
     npc_voice_finish: "audio/sound_effects/VoiceLinesCrunch/Part2_SnowChild_Crushed.wav",
     npc_text_finish: "Thank you so much. He is alive again. We can play together once more.",
-    unlocks: JellyNettle,
-    requests: Item(JellyNettle),
+    unlocks: [],
+    provides: [MoltenSnowman],
+    requests: Item(Snowman),
     started: false,
     finished: false
 ),
@@ -59,7 +63,8 @@ Quest (
     npc_text_start: "Greetings alchemist of the realm. I come to you in times of trouble for the kingdom. The coffers are empty and the peasants are starving. All while rebellions are brewing. To do anything I need gold and so I come to you. Tales say alchemists like you may turn worthless metal to gold. Luckily, I have much lead. A metal of little use to me, so I request you turn it to gold for me and safe the kingdom.",
     npc_voice_finish: "audio/sound_effects/VoiceLinesCrunch/Part1_King_Crushed.wav",
     npc_text_finish: "You truly  have saved the kingdom. I and everyone will be in yor debt for a long time. As a reward I give you access to all my supplies of lead. Do with it as you will.",
-    unlocks: Lead,
+    unlocks: [Lead],
+    provides: [Lead],
     requests: Item(Gold),
     started: false,
     finished: false
@@ -72,7 +77,8 @@ Quest (
     npc_text_start: "Thou name is known all under the world. Thy hands turn rock to human food. Our house is filled with lumpy lead. It is dark and tastes strange. But surely a human like you can turn it to gold. The king told and we heard it. But his gold is strange. It is soft yet too hard to bite. And it has no holes like propper gold. Wouldst thou turn this piece of useless junk to gold for us?",
     npc_voice_finish: "audio/sound_effects/VoiceLinesCrunch/Part2_GiantRat_Crushed.wav",
     npc_text_finish: "You have proven a true genius. We have not had anything like this in ages. Our bretheren will come to you in need. If you help them, your name will be hailed in the new age of the rat. Our king will spare you, once he rules over this tiny kingdom.",
-    unlocks: JellyNettle,
+    unlocks: [],
+    provides: [],
     requests: Item(Cheese),
     started: false,
     finished: false

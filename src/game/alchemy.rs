@@ -9,7 +9,6 @@ pub(super) fn plugin(app: &mut App) {
     app.init_asset::<RecipeBook>();
     app.add_plugins(RonAssetPlugin::<RecipeBook>::new(&["recipes.ron"]));
 
-
     // #[cfg(feature = "dev")]
     // app.add_systems(Update, debug_dump_recipebook);
     // app.load_resource::<PlayerAssets>();
@@ -97,16 +96,27 @@ pub enum Tool {
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord, Hash, Reflect)]
 pub enum AlchemyItems {
     JellyNettle,
-    NettleDust,
+    Sunflower,
+    IcyLilly,
+    OrbClear,
+    OrbUnclear,
+    OrbBroken,
+    JellyPowder,
+    IcyPowder,
+    SunflowerPowder,
     HealthPotion,
+    MoltenSnowman,
+    Snowman,
+    Flask,
+    PhilosopherStone,
     Lead,
     Gold,
-    Cheese
+    Cheese,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Reflect)]
 pub enum AlchemyEffect {
-    Explosion
+    Explosion,
 }
 
 #[cfg(test)]
