@@ -286,6 +286,7 @@ impl FromWorld for LevelAssets {
     }
 }
 
+
 #[derive(Component, Default, Clone)]
 pub struct FireAmbienceSFX;
 

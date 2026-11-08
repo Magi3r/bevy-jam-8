@@ -87,7 +87,7 @@ pub fn fire_scene(image: Handle<Image>, highlight_image: Handle<Image>) -> impl 
     bsn! {
         #CauldronFire
         fire_animation
-        Interactable {name: "Fire", description: "Ouch! Its hot. Why not touch it again?"}
+        Interactable {name: "Fire", description: "Burns stuff and heats cauldron"}
         Sprite {
             image:  { image },
         }

@@ -94,7 +94,7 @@ pub enum Tool {
     Cauldron,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord, Hash, Reflect)]
 pub enum AlchemyItems {
     JellyNettle,
     NettleDust,
@@ -104,7 +104,7 @@ pub enum AlchemyItems {
     Cheese
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, Reflect)]
 pub enum AlchemyEffect {
     Explosion
 }

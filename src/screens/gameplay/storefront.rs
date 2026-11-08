@@ -2,7 +2,7 @@ use bevy::prelude::*;
 
 use crate::{
     game::{
-        item_scene, level::{LevelAssets, LevelRoot}, on_click_morter, progression::{Progression, QuestAssets},
+        item_scene, level::{LevelAssets, LevelRoot}, on_click_morter, progression::{Npc, Progression, QuestAssets},
     }, screens::{Screen::Gameplay, gameplay::ShopArea},
 };
 
@@ -44,7 +44,8 @@ pub fn storefront_scene(level_assets: &Res<LevelAssets>, quest_assets: &Res<Ques
                 @item_scene("Sunflower".into(), "About as hot as the sun, probably.".into(), level_assets.sunflower.clone(), level_assets.sunflower_highlight.clone())
             --
                 #Npc
-                @item_scene(progression.quests.first().unwrap().npc_name.clone(), progression.quests.first().unwrap().npc_description.clone(), quest_assets.npc_assets.first().unwrap().clone(), quest_assets.npc_assets.first().unwrap().clone())
+                Npc
+                @item_scene(progression.quests.get(progression.stage).unwrap().npc_name.clone(), progression.quests.get(progression.stage).unwrap().npc_description.clone(), quest_assets.npc_assets.get(progression.stage).unwrap().clone(), quest_assets.npc_assets.get(progression.stage).unwrap().clone())
                 Transform::from_xyz(0.,0.,-0.5)
         ]
     }

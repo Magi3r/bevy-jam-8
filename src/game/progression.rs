@@ -24,7 +24,7 @@ fn init_assets(mut commands: Commands, assets: Res<AssetServer>, level_assets: I
 }
 
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone, Reflect)]
 pub struct Quest {
     pub npc_name: String,
     pub npc_description: String,
@@ -39,13 +39,14 @@ pub struct Quest {
     pub finished: bool
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone, Reflect)]
 pub enum NpcRequests {
     Item(AlchemyItems),
     Effect(AlchemyEffect)
 }
 
-#[derive(Serialize, Deserialize, Asset, Resource, TypePath, Debug, Default, Clone)]
+#[derive(Serialize, Deserialize, Asset, Resource, Reflect, Debug, Default, Clone)]
+#[reflect(Resource)]
 pub struct Progression {
     pub quests: Vec<Quest>,
 
@@ -53,8 +54,12 @@ pub struct Progression {
 
 }
 
+#[derive(Component, Default, Clone)]
+pub struct Npc;
+
 
 #[derive(Resource, Asset, Clone, Reflect, Default)]
+#[reflect(Resource)]
 pub struct QuestAssets {
     #[dependency]
     pub npc_assets: Vec<Handle<Image>>,
