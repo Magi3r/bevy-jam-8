@@ -23,7 +23,6 @@ fn spawn_credits_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
         @widget::ui_root("Credits Menu")
         GlobalZIndex(2)
         DespawnOnExit<Menu>(Menu::Credits)
-        Sprite {image: "images/gui/TitleScreen.png"}
         Children [
             @widget::header("Created by")
             --

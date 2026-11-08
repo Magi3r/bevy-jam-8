@@ -20,7 +20,7 @@ fn close_menu(mut next_menu: ResMut<NextState<Menu>>) {
 fn show_backdrop(mut commands: Commands, assets: Res<AssetServer>) {
     commands.spawn_scene(bsn! {
         #Background
-        Sprite {color: TEMP_CHANGE_ME_SOON_COLOR, rect: Rect::new(0.,0.,1920.,1080.)}
+        Sprite {image: "images/gui/TitleScreen.png"}
         Transform::from_xyz(0.0,0.0,-1.0)
         DespawnOnExit<Screen>(Screen::Title)
     });

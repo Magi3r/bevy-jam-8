@@ -4,9 +4,15 @@ use bevy::{audio::Source, prelude::*};
 use bevy_common_assets::ron::RonAssetPlugin;
 
 use crate::{
-    asset_tracking::LoadResource, audio::music, game::{
-        alchemy::{Recipe, RecipeBook}, animation::transition_scene, progression::Progression, tooltip,
-    }, screens::{
+    asset_tracking::LoadResource,
+    audio::music,
+    game::{
+        alchemy::{Recipe, RecipeBook},
+        animation::transition_scene,
+        progression::Progression,
+        tooltip,
+    },
+    screens::{
         Screen,
         gameplay::{
             ShopArea::{self, CookingArea, Storefront, TransitionAnimation},
@@ -276,16 +282,13 @@ impl FromWorld for LevelAssets {
             cauldron_empty_sfx: assets.load("audio/sound_effects/emptying_cauldron.mp3"),
             fire_ambience_sfx: assets
                 .load("audio/sound_effects/Fire/engyclick-firewood-burning-sound-179862.mp3"),
-            cauldron_stir_sfx: assets
-                .load("audio/sound_effects/stir_couldron.mp3"),
+            cauldron_stir_sfx: assets.load("audio/sound_effects/stir_couldron.mp3"),
             // Other
             recipes: assets.load("recipes.ron"),
             progression: assets.load("quests.ron"),
-
         }
     }
 }
-
 
 #[derive(Component, Default, Clone)]
 pub struct FireAmbienceSFX;

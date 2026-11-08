@@ -4,14 +4,19 @@ use bevy::{
 };
 
 use crate::{
-    audio::sound_effect, game::{
+    audio::sound_effect,
+    game::{
         animation::{CauldronAnimation, FireAnimation, MortarAnimation, StirerAnimation},
         level::{CauldronAmbienceSFX, FireAmbienceSFX, LevelAssets},
-    }, screens::{
-        Screen::Gameplay, gameplay::{
-            cooking_area::{Cauldron, Fire, Pull, Stirer}, storefront::Mortar,
+    },
+    screens::{
+        Screen::Gameplay,
+        gameplay::{
+            cooking_area::{Cauldron, Fire, Pull, Stirer},
+            storefront::Mortar,
         },
-    }, theme::palette::BUTTON_BACKGROUND,
+    },
+    theme::palette::BUTTON_BACKGROUND,
 };
 
 const TOOLTIP_OFFSET: Vec2 = Vec2::new(15.0, 15.0);
@@ -22,7 +27,12 @@ pub mod level;
 pub mod progression;
 
 pub(super) fn plugin(app: &mut App) {
-    app.add_plugins((alchemy::plugin, progression::plugin, level::plugin, animation::plugin));
+    app.add_plugins((
+        alchemy::plugin,
+        progression::plugin,
+        level::plugin,
+        animation::plugin,
+    ));
     app.add_systems(
         Update,
         (

@@ -41,7 +41,16 @@ pub fn label(text: impl Into<String>) -> impl Scene {
     bsn! {
         #Label
         Text({ text.into() })
-        TextFont { font_size: px(24.0) }
+        TextFont { font_size: px(26.0) }
+        TextColor(LABEL_TEXT)
+    }
+}
+
+pub fn title_label(text: impl Into<String>) -> impl Scene {
+    bsn! {
+        #Label
+        Text({ text.into() })
+        TextFont { font_size: px(60.0) }
         TextColor(LABEL_TEXT)
     }
 }
@@ -138,7 +147,7 @@ where
             Children [
                 #ButtonText
                 Text(text)
-                TextFont { font_size: px(40.0) }
+                TextFont { font_size: px(28.0) }
                 TextColor(BUTTON_TEXT)
                 // Don't bubble picking events from the text up to the button.
                 Pickable::IGNORE

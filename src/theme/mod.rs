@@ -30,16 +30,8 @@ fn load_fonts(mut commands: Commands, asset_server: Res<AssetServer>) {
 #[derive(Resource, Clone, Default)]
 struct GlobalFont(FontSource);
 
-fn set_global_font(
-    mut commands: Commands,
-    query: Query<Entity, Added<Text>>,
-    font: Res<GlobalFont>,
-) {
-    for entity in &query {
-        commands.entity(entity).insert(TextFont {
-            font: font.0.clone(),
-            font_size: FontSize::Px(26.0),
-            ..default()
-        });
+fn set_global_font(mut query: Query<&mut TextFont, Added<Text>>, font: Res<GlobalFont>) {
+    for mut text_font in &mut query {
+        text_font.font = font.0.clone();
     }
 }
