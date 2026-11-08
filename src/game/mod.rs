@@ -9,12 +9,11 @@ use crate::{
         animation::{CauldronAnimation, FireAnimation, MortarAnimation, StirerAnimation},
         level::{CauldronAmbienceSFX, FireAmbienceSFX, LevelAssets},
     },
-    }, screens::{
-        Screen::Gameplay, gameplay::{
-            cooking_area::{Cauldron, Fire, Pull, Stirer}, storefront::Mortar,
-    }, screens::{
-        Screen::Gameplay, gameplay::{
-            cooking_area::{Cauldron, Fire, FireState, Pull, Stirer}, storefront::Mortar,
+    screens::{
+        Screen::Gameplay,
+        gameplay::{
+            cooking_area::{Cauldron, Fire, FireState, Pull, Stirer},
+            storefront::Mortar,
         },
     },
     theme::palette::BUTTON_BACKGROUND,
@@ -266,7 +265,7 @@ pub fn on_click_morter(
 
 pub fn on_click_toggle_fire_on_off(
     _event: On<PointerClick>,
-    mut fire: Query<(Entity,&mut Sprite), With<Fire>>,
+    mut fire: Query<(Entity, &mut Sprite), With<Fire>>,
     mut fire_state: ResMut<FireState>,
     mut commands: Commands,
     level_assets: If<Res<LevelAssets>>,
