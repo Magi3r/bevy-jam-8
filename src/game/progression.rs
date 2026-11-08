@@ -3,13 +3,14 @@ use bevy_common_assets::ron::RonAssetPlugin;
 use serde::{Deserialize, Serialize};
 use tracing::Level;
 
-use crate::{asset_tracking::LoadResource, game::{alchemy::{AlchemyEffect, AlchemyItems}, level::LevelAssets}, screens::Screen::Gameplay};
+use crate::{asset_tracking::LoadResource, audio::voice, game::{alchemy::{AlchemyEffect, AlchemyItems}, level::LevelAssets}, screens::{Screen::Gameplay, gameplay::ShopArea::Storefront}};
 
 pub(super) fn plugin(app: &mut App) {
     app.init_asset::<Progression>();
     app.add_plugins(RonAssetPlugin::<Progression>::new(&["quests.ron"]));
     app.add_systems(OnEnter(Gameplay), debug_dump_progression);
     app.add_systems(OnEnter(Gameplay), init_assets);
+    app.add_systems(OnEnter(Storefront), play_quest_start_voiceline);
 }
 
 fn debug_dump_progression(assets: Res<AssetServer>, level_assets: If<Res<LevelAssets>>, progression: If<Res<Assets<Progression>>>) {
@@ -81,4 +82,14 @@ impl QuestAssets {
         }
         QuestAssets { npc_assets, npc_voice_start, npc_voice_finsh }
     }
+}
+
+fn play_quest_start_voiceline(mut commands: Commands, quest_assets: Res<QuestAssets>, mut progression_assets: ResMut<Progression>) {
+    let stage = progression_assets.stage;
+    progression_assets.quests.get_mut(stage).unwrap().started = true;
+    commands.spawn_scene(voice(quest_assets.npc_voice_start.get(stage).unwrap().clone()));
+}
+
+fn on_click_play_quest_start_voiceline(_: On<PointerClick>, commands: Commands, quest_assets: Res<QuestAssets>, progression_assets: ResMut<Progression>) {
+    play_quest_start_voiceline(commands, quest_assets, progression_assets);
 }

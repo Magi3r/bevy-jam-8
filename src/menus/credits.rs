@@ -44,7 +44,7 @@ fn spawn_credits_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
 fn created_by() -> impl Scene {
     grid(vec![
         ["Magi3r", "Code"],
-        ["Goldhand", "Art and Code"],
+        ["GoldHand", "Art and Code"],
         ["Anabelle Kahns", "Sounds"],
         ["Palladium02", "Code"],
     ])
@@ -54,7 +54,7 @@ fn assets() -> impl Scene {
     grid(vec![
         ["Sound Effects", "by Anabelle Kahns or via Pixabay"],
         ["Button SFX", "CC0 by Jaszunio15"],
-        ["Images", "by Goldhand"],
+        ["Images", "by GoldHand"],
         ["Font", "by MCKL via Google Fonts"],
         [
             "Bevy logo",
@@ -66,7 +66,7 @@ fn assets() -> impl Scene {
 fn voices() -> impl Scene {
     grid(vec![
         ["Wanderer", "Anabelle Kahns"],
-        ["Kid", "Goldhand"],
+        ["Kid", "GoldHand"],
         ["Wizard", "Benjamin von Freden"],
         ["King", ""],
         ["Rat", "Anabelle Kahns"]

@@ -24,6 +24,24 @@ pub fn music(handle: Handle<AudioSource>) -> impl Scene {
     }
 }
 
+
+/// An organizational marker component that should be added to a spawned [`AudioPlayer`] if it's in the
+/// general "voice" category (e.g. voice lines).
+///
+/// This can then be used to query for and operate on sounds in that category.
+#[derive(Component, Reflect, Default, Clone)]
+#[reflect(Component)]
+pub struct Voice;
+
+/// A voice audio instance.
+pub fn voice(handle: Handle<AudioSource>) -> impl Scene {
+    bsn! {
+        AudioPlayer(handle)
+        PlaybackSettings::DESPAWN
+        Voice
+    }
+}
+
 /// An organizational marker component that should be added to a spawned [`AudioPlayer`] if it's in the
 /// general "sound effect" category (e.g. footsteps, the sound of a magic spell, a door opening).
 ///

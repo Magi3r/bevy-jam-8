@@ -9,11 +9,12 @@ use crate::{
         animation::{CauldronAnimation, FireAnimation, MortarAnimation, StirerAnimation},
         level::{CauldronAmbienceSFX, FireAmbienceSFX, LevelAssets},
     },
-    screens::{
-        Screen::Gameplay,
-        gameplay::{
-            cooking_area::{Cauldron, Fire, Pull, Stirer},
-            storefront::Mortar,
+    }, screens::{
+        Screen::Gameplay, gameplay::{
+            cooking_area::{Cauldron, Fire, Pull, Stirer}, storefront::Mortar,
+    }, screens::{
+        Screen::Gameplay, gameplay::{
+            cooking_area::{Cauldron, Fire, FireState, Pull, Stirer}, storefront::Mortar,
         },
     },
     theme::palette::BUTTON_BACKGROUND,
@@ -93,10 +94,7 @@ pub fn item_scene(
 pub fn fire_scene(image: Handle<Image>, highlight_image: Handle<Image>) -> impl Scene {
     // A texture atlas is a way to split a single image into a grid of related images.
     // You can learn more in this example: https://github.com/bevyengine/bevy/blob/latest/examples/2d/texture_atlas.rs
-    let fire_animation = FireAnimation::new();
     bsn! {
-        #CauldronFire
-        fire_animation
         Interactable {name: "Fire", description: "Burns stuff and heats cauldron"}
         Sprite {
             image:  { image },
@@ -268,17 +266,18 @@ pub fn on_click_morter(
 
 pub fn on_click_toggle_fire_on_off(
     _event: On<PointerClick>,
-    mut fire: Query<(Entity, &mut Fire, &mut Sprite)>,
+    mut fire: Query<(Entity,&mut Sprite), With<Fire>>,
+    mut fire_state: ResMut<FireState>,
     mut commands: Commands,
     level_assets: If<Res<LevelAssets>>,
     fire_sfx: Query<&AudioSink, With<FireAmbienceSFX>>,
     // cauldron_sfx: Query<&AudioSink, (With<CauldronAmbienceSFX>, Without<FireAmbienceSFX>)>,
 ) {
     // do not start cauldron animation again if its already running
-    if let Ok((entity, mut fire, mut sprite)) = fire.single_mut() {
-        if fire.0 {
+    if let Ok((entity, mut sprite)) = fire.single_mut() {
+        if fire_state.0 {
             // toggle fire off
-            fire.0 = false;
+            fire_state.0 = false;
             sprite.image = level_assets.fire_off.clone();
             commands.entity(entity).remove::<FireAnimation>();
             if let Ok(sink) = fire_sfx.single() {
@@ -289,7 +288,7 @@ pub fn on_click_toggle_fire_on_off(
             // }
         } else {
             // toggle fire on
-            fire.0 = true;
+            fire_state.0 = true;
             commands.entity(entity).insert(FireAnimation::new());
             if let Ok(sink) = fire_sfx.single() {
                 sink.play();

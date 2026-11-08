@@ -21,6 +21,7 @@ fn show_backdrop(mut commands: Commands, assets: Res<AssetServer>) {
     commands.spawn_scene(bsn! {
         #Background
         Sprite {image: "images/gui/TitleScreen.png"}
+        Sprite {color: TEMP_CHANGE_ME_SOON_COLOR, rect: Rect::new(0.,0.,1920.,1080.)}
         Transform::from_xyz(0.0,0.0,-1.0)
         DespawnOnExit<Screen>(Screen::Title)
     });

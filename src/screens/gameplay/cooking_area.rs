@@ -1,20 +1,18 @@
 use bevy::prelude::*;
 
 use crate::{
-    audio::{music, sound_effect},
-    game::{
-        fire_scene, item_scene,
-        level::{LevelAssets, LevelRoot},
-        on_click_cauldron_empty, on_click_stir_cauldron, on_click_toggle_fire_on_off,
-    },
-    screens::{Screen::Gameplay, gameplay::ShopArea},
+    audio::{music, sound_effect}, game::{
+        animation::FireAnimation, fire_scene, item_scene, level::{LevelAssets, LevelRoot}, on_click_cauldron_empty, on_click_stir_cauldron, on_click_toggle_fire_on_off,
+    }, screens::{Screen::Gameplay, gameplay::ShopArea},
 };
 
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(
         OnEnter(ShopArea::CookingArea),
-        spawn_level.run_if(in_state(Gameplay)),
+        (spawn_level, spawn_fire).run_if(in_state(Gameplay)),
+
     );
+    app.init_resource::<FireState>();
 }
 
 #[derive(Component, Clone, Default)]
@@ -27,9 +25,18 @@ pub struct Stirer;
 pub struct Cauldron;
 
 #[derive(Component, Clone, Default)]
-pub struct Fire(pub bool);
+pub struct Fire;
 #[derive(Component, Clone, Default)]
 struct CookingAreaScene;
+
+#[derive(Resource, Reflect)]
+pub struct FireState(pub bool);
+
+impl FromWorld for FireState {
+    fn from_world(_world: &mut World) -> Self {
+        FireState(true)
+    }
+}
 
 pub fn cooking_area_scene(level_assets: &Res<LevelAssets>) -> impl Scene {
     bsn! {
@@ -41,11 +48,7 @@ pub fn cooking_area_scene(level_assets: &Res<LevelAssets>) -> impl Scene {
         Children [
                 Sprite {image: {level_assets.deep_background_cooking_area.clone()}}
                 Transform::from_xyz(0.0,0.0,-2.0)
-            --
-                #Fire
-                Fire(true)
-                on(on_click_toggle_fire_on_off)
-                @fire_scene(level_assets.fire.first().unwrap().clone(), level_assets.fire_highlight.clone())
+
             --
                 #Cauldron
                 Cauldron
@@ -65,6 +68,28 @@ pub fn cooking_area_scene(level_assets: &Res<LevelAssets>) -> impl Scene {
                 on(on_click_cauldron_empty)
                 @item_scene("Pull".to_string(), "Pull to flush".to_string(), level_assets.pull.clone(), level_assets.pull_highlight.clone())
         ]
+    }
+}
+
+fn spawn_fire(mut commands: Commands, fire: Res<FireState>, level_assets: Res<LevelAssets>) {
+    let fire_animation = FireAnimation::new();
+    if fire.0 {
+        // fire on
+        commands.spawn_scene(bsn!{
+            #Fire
+            Fire
+            on(on_click_toggle_fire_on_off)
+            fire_animation
+            @fire_scene(level_assets.fire.first().unwrap().clone(), level_assets.fire_highlight.clone())
+        });
+    } else {
+        // fire off
+        commands.spawn_scene(bsn!{
+            #Fire
+            Fire
+            on(on_click_toggle_fire_on_off)
+            @fire_scene(level_assets.fire_off.clone(), level_assets.fire_highlight.clone())
+        });
     }
 }
 
