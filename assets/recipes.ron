@@ -1,27 +1,374 @@
 ([
-    (
-        name: "Cook Jelly Nettle",
+    // Mortar
+     (
+        name: "Jelly Nettle Powder",
         ingredients: [
             (Alchemy(JellyNettle), 1)
         ],
         produces: [
-            (Element(Life), 5),
-            (Element(Soul), 1),
+            (Alchemy(JellyPowder), 1)
+        ],
+        uses: Mortar,
+        discovered: false,
+    ),
+    (
+        name: "Sunflower Powder",
+        ingredients: [
+            (Alchemy(Sunflower), 1)
+        ],
+        produces: [
+            (Alchemy(SunflowerPowder), 1)
+        ],
+        uses: Mortar,
+        discovered: false,
+    ),
+    (
+        name: "Icy Lilly Powder",
+        ingredients: [
+            (Alchemy(IcyLilly), 1)
+        ],
+        produces: [
+            (Alchemy(IcyPowder), 1)
+        ],
+        uses: Mortar,
+        discovered: false,
+    ),
+    (
+        name: "Crush Pondering Orb",
+        ingredients: [
+            (Alchemy(OrbUnclear), 1)
+        ],
+        produces: [
+            (Alchemy(OrbBroken), 1)
+        ],
+        uses: Mortar,
+        discovered: false,
+    ),
+    (
+        name: "Crush Pondering Orb",
+        ingredients: [
+            (Alchemy(OrbClear), 1)
+        ],
+        produces: [
+            (Alchemy(OrbBroken), 1)
+        ],
+        uses: Mortar,
+        discovered: false,
+    ),
+
+    // Cauldron
+    (
+        name: "Boil Jelly Nettle",
+        ingredients: [
+            (Alchemy(JellyNettle), 1)
+        ],
+        produces: [
+            (Element(Life), 3)
         ],
         uses: Cauldron,
         discovered: true,
     ),
     (
-        name: "Health Potion",
+        name: "Boil Jelly Powder",
         ingredients: [
-            (Element(Life), 5),
-            (Element(Fire), 1),
+            (Alchemy(JellyPowder), 1)
         ],
         produces: [
-            (Alchemy(HealthPotion), 1),
+            (Element(Life), 5),
+            (Element(Soul), 1)
+        ],
+        uses: Cauldron,
+        discovered: true,
+    ),
+    (
+        name: "Boil Sunflower",
+        ingredients: [
+            (Alchemy(Sunflower), 1)
+        ],
+        produces: [
+            (Element(Life), 3)
+        ],
+        uses: Cauldron,
+        discovered: true,
+    ),
+    (
+        name: "Boil Sunflower Powder",
+        ingredients: [
+            (Alchemy(SunflowerPowder), 1)
+        ],
+        produces: [
+            (Element(Life), 3),
+            (Element(Fire), 1)
+        ],
+        uses: Cauldron,
+        discovered: true,
+    ),
+    (
+        name: "Boil Icy Lilly",
+        ingredients: [
+            (Alchemy(IcyLilly), 1)
+        ],
+        produces: [
+            (Element(Life), 3)
+        ],
+        uses: Cauldron,
+        discovered: true,
+    ),
+    (
+        name: "Boil Icy Powder",
+        ingredients: [
+            (Alchemy(IcyPowder), 1)
+        ],
+        produces: [
+            (Element(Life), 3),
+            (Element(Ice), 1)
+        ],
+        uses: Cauldron,
+        discovered: true,
+    ),
+    (
+        name: "Basic Potion",
+        ingredients: [
+            (Element(Water), 5),
+            (Element(Fire), 5),
+            (Element(Soul), 1),
+        ],
+        produces: [
+            (Fluid(BasicPotion), 1),
         ],
         uses: Cauldron,
         discovered: false,
-    )
+    ),
+    (
+        name: "Health Potion",
+        ingredients: [
+            (Alchemy(BasicPotion), 1),
+            (Element(Life), 3)
+        ],
+        produces: [
+            (Fluid(HealthPotion), 1),
+        ],
+        uses: Cauldron,
+        discovered: false,
+    ),
+    (
+        name: "Eternal Snow",
+        ingredients: [
+            (Element(Ice), 5),
+            (Element(Stone), 3),
+            (Element(Soul), 1),
+        ],
+        produces: [
+            (Alchemy(EternalSnow), 1),
+        ],
+        uses: Cauldron,
+        discovered: false,
+    ),
+    (
+        name: "Unmelting Snowman",
+        ingredients: [
+            (Alchemy(EternalSnow), 1),
+            (Alchemy(MoltenSnowman), 1),
+            (Element(Life), 3),
+        ],
+        produces: [
+            (Alchemy(Snowman), 1),
+        ],
+        uses: Cauldron,
+        discovered: false,
+    ),
+    (
+        name: "Split Lead",
+        ingredients: [
+            (Alchemy(Lead), 1),
+            (Element(Soul), 5),
+        ],
+        produces: [
+            (Element(Metal), 5),
+            (Element(Ice), 2),
+        ],
+        uses: Cauldron,
+        discovered: false,
+    ),
+    (
+        name: "Split Gold",
+        ingredients: [
+            (Alchemy(Gold), 1),
+            (Element(Soul), 5),
+        ],
+        produces: [
+            (Element(Metal), 5),
+            (Element(Fire), 2),
+        ],
+        uses: Cauldron,
+        discovered: false,
+    ),
+    (
+        name: "Make Lead",
+        ingredients: [
+            (Element(Soul), 5),
+            (Element(Metal), 5),
+            (Element(Ice), 2),
+            (Alchemy(PhilosopherStone), 1)
+        ],
+        produces: [
+            (Alchemy(Lead), 1),
+            (Alchemy(PhilosopherStone), 1)
+        ],
+        uses: Cauldron,
+        discovered: false,
+    ),
+    (
+        name: "Make Gold",
+        ingredients: [
+            (Element(Soul), 5),
+            (Element(Metal), 5),
+            (Element(Fire), 2),
+            (Alchemy(PhilosopherStone), 1)
+        ],
+        produces: [
+            (Alchemy(Gold), 1),
+            (Alchemy(PhilosopherStone), 1)
+        ],
+        uses: Cauldron,
+        discovered: false,
+    ),
+    (
+        name: "Make Cheese",
+        ingredients: [
+            (Alchemy(Gold), 3),
+            (Element(Life), 7),
+            (Element(Soul), 7),
+            (Alchemy(PhilosopherStone), 1)
+        ],
+        produces: [
+            (Alchemy(Cheese), 1),
+        ],
+        uses: Cauldron,
+        discovered: false,
+    ),
+    (
+        name: "Make Icy Lilly",
+        ingredients: [
+            (Element(Life), 3),
+            (Element(Soul), 1),
+            (Element(Ice), 1)
+        ],
+        produces: [
+            (Alchemy(IcyLilly), 1),
+        ],
+        uses: Cauldron,
+        discovered: false,
+    ),
+    (
+        name: "Make Jelly Nettle",
+        ingredients: [
+            (Element(Life), 5),
+            (Element(Soul), 3),
+        ],
+        produces: [
+            (Alchemy(JellyNettle), 1),
+        ],
+        uses: Cauldron,
+        discovered: false,
+    ),
+    (
+        name: "Make Sunflower",
+        ingredients: [
+            (Element(Life), 3),
+            (Element(Soul), 1),
+            (Element(Fire), 1)
+        ],
+        produces: [
+            (Alchemy(Sunflower), 1),
+        ],
+        uses: Cauldron,
+        discovered: false,
+    ),
 
+    // Philosopher's Stone
+    (
+        name: "Fire to Metal",
+        ingredients: [
+            (Element(Fire), 1),
+            (Element(Soul), 1),
+            (Alchemy(PhilosopherStone), 1)
+        ],
+        produces: [
+            (Element(Metal), 1),
+            (Alchemy(PhilosopherStone), 1)
+        ],
+        uses: Cauldron,
+        discovered: false,
+    ),
+    (
+        name: "Metal to Water",
+        ingredients: [
+            (Element(Metal), 1),
+            (Element(Soul), 1),
+            (Alchemy(PhilosopherStone), 1)
+        ],
+        produces: [
+            (Element(Water), 1),
+            (Alchemy(PhilosopherStone), 1)
+        ],
+        uses: Cauldron,
+        discovered: false,
+    ),
+    (
+        name: "Water to Ice",
+        ingredients: [
+            (Element(Water), 1),
+            (Element(Soul), 1),
+            (Alchemy(PhilosopherStone), 1)
+        ],
+        produces: [
+            (Element(Ice), 1),
+            (Alchemy(PhilosopherStone), 1)
+        ],
+        uses: Cauldron,
+        discovered: false,
+    ),
+    (
+        name: "Ice to Life",
+        ingredients: [
+            (Element(Ice), 1),
+            (Element(Soul), 1),
+            (Alchemy(PhilosopherStone), 1)
+        ],
+        produces: [
+            (Element(Life), 1),
+            (Alchemy(PhilosopherStone), 1)
+        ],
+        uses: Cauldron,
+        discovered: false,
+    ),
+    (
+        name: "Life to Stone",
+        ingredients: [
+            (Element(Life), 1),
+            (Element(Soul), 1),
+            (Alchemy(PhilosopherStone), 1)
+        ],
+        produces: [
+            (Element(Stone), 1),
+            (Alchemy(PhilosopherStone), 1)
+        ],
+        uses: Cauldron,
+        discovered: false,
+    ),
+    (
+        name: "Stone to Fire",
+        ingredients: [
+            (Element(Stone), 1),
+            (Element(Soul), 1),
+            (Alchemy(PhilosopherStone), 1)
+        ],
+        produces: [
+            (Element(Fire), 1),
+            (Alchemy(PhilosopherStone), 1)
+        ],
+        uses: Cauldron,
+        discovered: false,
+    ),
 ])

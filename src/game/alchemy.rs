@@ -73,6 +73,7 @@ pub struct Recipe {
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum Ingredient {
     Alchemy(AlchemyItems),
+    Fluid(AlchemyFluid),
     Element(Element),
 }
 
@@ -105,13 +106,21 @@ pub enum AlchemyItems {
     IcyPowder,
     SunflowerPowder,
     HealthPotion,
+    BasicPotion,
     MoltenSnowman,
     Snowman,
+    EternalSnow,
     Flask,
     PhilosopherStone,
     Lead,
     Gold,
     Cheese,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord, Hash, Reflect)]
+pub enum AlchemyFluid {
+    BasicPotion,
+    HealthPotion,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Reflect)]
