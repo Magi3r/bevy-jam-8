@@ -72,8 +72,8 @@ where
         action,
         bsn! {
             Node {
-                width: px(1920),
-                height: px(175),
+                width: px(1000),
+                height: px(140),
                 align_items: AlignItems::Center,
                 justify_content: JustifyContent::Center,
             }
