@@ -2,12 +2,8 @@ use bevy::prelude::*;
 
 use crate::{
     game::{
-        item_scene,
-        level::{LevelAssets, LevelRoot},
-        on_click_morter,
-        progression::{Npc, Progression, QuestAssets, on_click_play_quest_start_voiceline},
-    },
-    screens::{Screen::Gameplay, gameplay::ShopArea},
+        alchemy::{AlchemyItems, GetOnClick}, item_scene, level::{LevelAssets, LevelRoot}, on_click_morter, progression::{Npc, Progression, QuestAssets, on_click_play_quest_start_voiceline}, tool_inventory::ElementOrItem,
+    }, screens::{Screen::Gameplay, gameplay::ShopArea},
 };
 
 pub(super) fn plugin(app: &mut App) {
@@ -47,6 +43,7 @@ pub fn storefront_scene(
             --
                 @item_scene("Flasks".into(), "Holds one standard unit of potion.".into(), level_assets.flask.clone(), level_assets.flask_highlight.clone())
                 Transform::from_xyz(0.,0.,1.5)
+                GetOnClick(AlchemyItems::Flask, "images/items/Flask.png")
             --
                 #Sunflower
                 @item_scene("Sunflower".into(), "About as hot as the sun, probably.".into(), level_assets.sunflower.clone(), level_assets.sunflower_highlight.clone())

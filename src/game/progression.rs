@@ -5,13 +5,17 @@ use serde::{Deserialize, Serialize};
 use tracing::Level;
 
 use crate::{
-    asset_tracking::LoadResource, audio::{Voice, voice}, game::{
+    asset_tracking::LoadResource,
+    audio::{Voice, voice},
+    game::{
         alchemy::{AlchemyEffect, AlchemyItems},
         level::LevelAssets,
-    }, screens::{
+    },
+    screens::{
         Screen::Gameplay,
         gameplay::ShopArea::{self, Storefront},
-    }, theme::palette::BLACK,
+    },
+    theme::palette::BLACK,
 };
 
 pub(super) fn plugin(app: &mut App) {

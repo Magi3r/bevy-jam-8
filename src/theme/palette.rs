@@ -18,4 +18,4 @@ pub const BUTTON_PRESSED_BACKGROUND: Color = Color::srgb(0.239, 0.286, 0.600);
 pub const TEMP_CHANGE_ME_SOON_COLOR: Color = Color::srgb(0.933, 0.160, 0.827);
 
 /// #000000
-pub const BLACK: Color = Color::srgb(0.0,0.0,0.0);
+pub const BLACK: Color = Color::srgb(0.0, 0.0, 0.0);

@@ -24,7 +24,6 @@ pub fn music(handle: Handle<AudioSource>) -> impl Scene {
     }
 }
 
-
 /// An organizational marker component that should be added to a spawned [`AudioPlayer`] if it's in the
 /// general "voice" category (e.g. voice lines).
 ///

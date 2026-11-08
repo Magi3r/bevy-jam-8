@@ -4,20 +4,15 @@ use bevy::{
 };
 
 use crate::{
-    audio::sound_effect,
-    game::{
-        animation::{CauldronAnimation, FireAnimation, MortarAnimation, StirerAnimation},
-        level::{CauldronAmbienceSFX, FireAmbienceSFX, LevelAssets},
-        tool_inventory::{CauldronInventory, MortarInventory},
-    },
-    screens::{
+    audio::sound_effect, game::{
+        alchemy::HeldItem, animation::{CauldronAnimation, FireAnimation, MortarAnimation, StirerAnimation}, level::{CauldronAmbienceSFX, FireAmbienceSFX, LevelAssets}, tool_inventory::{CauldronInventory, MortarInventory},
+    }, screens::{
         Screen::Gameplay,
         gameplay::{
             cooking_area::{Cauldron, Fire, FireState, Pull, Stirer},
             storefront::Mortar,
         },
-    },
-    theme::palette::BUTTON_BACKGROUND,
+    }, theme::palette::BUTTON_BACKGROUND,
 };
 
 const TOOLTIP_OFFSET: Vec2 = Vec2::new(15.0, 15.0);
@@ -258,13 +253,18 @@ pub fn on_click_morter(
     _event: On<PointerClick>,
     mortar: Query<Entity, (With<Mortar>, Without<MortarAnimation>)>,
     level_assets: If<Res<LevelAssets>>,
+    held_item: Res<HeldItem>,
     mut commands: Commands,
 ) {
-    if let Ok(mortar) = mortar.single() {
-        commands
-            .entity(mortar)
-            .insert_if_new(MortarAnimation::new());
-        // commands.spawn_scene(sound_effect(level_assets.cauldron_stir_sfx.clone()));
+    // ignore click when item in hand
+    if held_item.entity.is_none() {
+
+        if let Ok(mortar) = mortar.single() {
+            commands
+                .entity(mortar)
+                .insert_if_new(MortarAnimation::new());
+            // commands.spawn_scene(sound_effect(level_assets.cauldron_stir_sfx.clone()));
+        }
     }
 }
 
@@ -274,32 +274,37 @@ pub fn on_click_toggle_fire_on_off(
     mut fire_state: ResMut<FireState>,
     mut commands: Commands,
     level_assets: If<Res<LevelAssets>>,
+    held_item: Res<HeldItem>,
     fire_sfx: Query<&AudioSink, With<FireAmbienceSFX>>,
     // cauldron_sfx: Query<&AudioSink, (With<CauldronAmbienceSFX>, Without<FireAmbienceSFX>)>,
 ) {
-    // do not start cauldron animation again if its already running
-    if let Ok((entity, mut sprite)) = fire.single_mut() {
-        if fire_state.0 {
-            // toggle fire off
-            fire_state.0 = false;
-            sprite.image = level_assets.fire_off.clone();
-            commands.entity(entity).remove::<FireAnimation>();
-            if let Ok(sink) = fire_sfx.single() {
-                sink.pause();
+    // ignore click when item in hand
+    if held_item.entity.is_none() {
+
+        // do not start cauldron animation again if its already running
+        if let Ok((entity, mut sprite)) = fire.single_mut() {
+            if fire_state.0 {
+                // toggle fire off
+                fire_state.0 = false;
+                sprite.image = level_assets.fire_off.clone();
+                commands.entity(entity).remove::<FireAnimation>();
+                if let Ok(sink) = fire_sfx.single() {
+                    sink.pause();
+                }
+                // if let Ok(sink) = cauldron_sfx.single() {
+                // sink.pause();
+                // }
+            } else {
+                // toggle fire on
+                fire_state.0 = true;
+                commands.entity(entity).insert(FireAnimation::new());
+                if let Ok(sink) = fire_sfx.single() {
+                    sink.play();
+                }
+                // if let Ok(sink) = cauldron_sfx.single() {
+                //     sink.play();
+                // }
             }
-            // if let Ok(sink) = cauldron_sfx.single() {
-            // sink.pause();
-            // }
-        } else {
-            // toggle fire on
-            fire_state.0 = true;
-            commands.entity(entity).insert(FireAnimation::new());
-            if let Ok(sink) = fire_sfx.single() {
-                sink.play();
-            }
-            // if let Ok(sink) = cauldron_sfx.single() {
-            //     sink.play();
-            // }
         }
     }
 }
