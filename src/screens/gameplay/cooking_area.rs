@@ -9,7 +9,7 @@ use crate::{
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(
         OnEnter(ShopArea::CookingArea),
-        (spawn_level, spawn_fire).run_if(in_state(Gameplay)),
+        (spawn_level, spawn_fire).chain().run_if(in_state(Gameplay)),
 
     );
     app.init_resource::<FireState>();
@@ -71,26 +71,29 @@ pub fn cooking_area_scene(level_assets: &Res<LevelAssets>) -> impl Scene {
     }
 }
 
-fn spawn_fire(mut commands: Commands, fire: Res<FireState>, level_assets: Res<LevelAssets>) {
+fn spawn_fire(mut commands: Commands, scene: Query<Entity, With<CookingAreaScene>>, fire: Res<FireState>, level_assets: Res<LevelAssets>) {
     let fire_animation = FireAnimation::new();
-    if fire.0 {
+    let id = if fire.0 {
         // fire on
         commands.spawn_scene(bsn!{
             #Fire
             Fire
+            DespawnOnExit<ShopArea>(ShopArea::CookingArea)
             on(on_click_toggle_fire_on_off)
             fire_animation
             @fire_scene(level_assets.fire.first().unwrap().clone(), level_assets.fire_highlight.clone())
-        });
+        }).id()
     } else {
         // fire off
         commands.spawn_scene(bsn!{
             #Fire
             Fire
+            DespawnOnExit<ShopArea>(ShopArea::CookingArea)
             on(on_click_toggle_fire_on_off)
             @fire_scene(level_assets.fire_off.clone(), level_assets.fire_highlight.clone())
-        });
-    }
+        }).id()
+    };
+    commands.entity(scene.single().unwrap()).add_child(id);
 }
 
 fn spawn_level(

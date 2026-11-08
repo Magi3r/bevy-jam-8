@@ -111,8 +111,7 @@ fn edge_pan_camera(
     if let Some(mouse_pos) = mouse {
         if mouse_pos.x < edge_size + cam_pos.translation.x {
             if let Some(area_left) = current_shop_area.get_area_left() {
-                // TODO: play animation
-                println!("GO LEFT");
+                // play animation
                 commands.spawn_scene(transition_scene(false, area_left, &level_assets));
 
                 next_shop_area.set(ShopArea::TransitionAnimation);
@@ -125,8 +124,7 @@ fn edge_pan_camera(
         }
         if mouse_pos.x > window_width - edge_size + cam_pos.translation.x {
             if let Some(area_right) = current_shop_area.get_area_right() {
-                // TODO: play animation
-                println!("GO RIGHT");
+                // play animation
 
                 commands.spawn_scene(transition_scene(true, area_right, &level_assets));
 

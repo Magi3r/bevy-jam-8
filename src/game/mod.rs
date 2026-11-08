@@ -8,12 +8,9 @@ use crate::{
     game::{
         animation::{CauldronAnimation, FireAnimation, MortarAnimation, StirerAnimation},
         level::{CauldronAmbienceSFX, FireAmbienceSFX, LevelAssets},
-    },
-    screens::{
-        Screen::Gameplay,
-        gameplay::{
-            cooking_area::{Cauldron, Fire, FireState, Pull, Stirer},
-            storefront::Mortar,
+    }, screens::{
+        Screen::Gameplay, gameplay::{
+            cooking_area::{Cauldron, Fire, FireState, Pull, Stirer}, storefront::Mortar,
         },
     },
     theme::palette::BUTTON_BACKGROUND,

@@ -90,6 +90,6 @@ fn play_quest_start_voiceline(mut commands: Commands, quest_assets: Res<QuestAss
     commands.spawn_scene(voice(quest_assets.npc_voice_start.get(stage).unwrap().clone()));
 }
 
-fn on_click_play_quest_start_voiceline(_: On<PointerClick>, commands: Commands, quest_assets: Res<QuestAssets>, progression_assets: ResMut<Progression>) {
+pub fn on_click_play_quest_start_voiceline(_: On<PointerClick>, commands: Commands, quest_assets: Res<QuestAssets>, progression_assets: ResMut<Progression>) {
     play_quest_start_voiceline(commands, quest_assets, progression_assets);
 }
