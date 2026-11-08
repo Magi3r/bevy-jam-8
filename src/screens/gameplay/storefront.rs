@@ -2,8 +2,12 @@ use bevy::prelude::*;
 
 use crate::{
     game::{
-        item_scene, level::{LevelAssets, LevelRoot}, on_click_morter, progression::{Npc, Progression, QuestAssets, on_click_play_quest_start_voiceline},
-    }, screens::{Screen::Gameplay, gameplay::ShopArea},
+        item_scene,
+        level::{LevelAssets, LevelRoot},
+        on_click_morter,
+        progression::{Npc, Progression, QuestAssets, on_click_play_quest_start_voiceline},
+    },
+    screens::{Screen::Gameplay, gameplay::ShopArea},
 };
 
 pub(super) fn plugin(app: &mut App) {
@@ -19,7 +23,11 @@ pub struct Mortar;
 #[derive(Component, Clone, Default)]
 struct StorefrontScene;
 
-pub fn storefront_scene(level_assets: &Res<LevelAssets>, quest_assets: &Res<QuestAssets>, progression: &Res<Progression>) -> impl Scene {
+pub fn storefront_scene(
+    level_assets: &Res<LevelAssets>,
+    quest_assets: &Res<QuestAssets>,
+    progression: &Res<Progression>,
+) -> impl Scene {
     bsn! {
         #Storefront
         StorefrontScene
@@ -57,7 +65,7 @@ fn spawn_level(
     level: Query<Entity, With<LevelRoot>>,
     level_assets: Res<LevelAssets>,
     quest_assets: Res<QuestAssets>,
-    progression: Res<Progression>
+    progression: Res<Progression>,
 ) {
     for level in level {
         let child = commands

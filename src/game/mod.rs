@@ -8,9 +8,13 @@ use crate::{
     game::{
         animation::{CauldronAnimation, FireAnimation, MortarAnimation, StirerAnimation},
         level::{CauldronAmbienceSFX, FireAmbienceSFX, LevelAssets},
-    }, screens::{
-        Screen::Gameplay, gameplay::{
-            cooking_area::{Cauldron, Fire, FireState, Pull, Stirer}, storefront::Mortar,
+        tool_inventory::{CauldronInventory, MortarInventory},
+    },
+    screens::{
+        Screen::Gameplay,
+        gameplay::{
+            cooking_area::{Cauldron, Fire, FireState, Pull, Stirer},
+            storefront::Mortar,
         },
     },
     theme::palette::BUTTON_BACKGROUND,
@@ -22,6 +26,7 @@ pub mod alchemy;
 pub mod animation;
 pub mod level;
 pub mod progression;
+pub mod tool_inventory;
 
 pub(super) fn plugin(app: &mut App) {
     app.add_plugins((
@@ -42,6 +47,9 @@ pub(super) fn plugin(app: &mut App) {
     );
     // #[cfg(feature = "dev")]
     // app.add_systems(Update, debug_items);
+
+    app.init_resource::<CauldronInventory>();
+    app.init_resource::<MortarInventory>();
 }
 
 #[derive(Component)]
