@@ -1,16 +1,17 @@
 use bevy::prelude::*;
 use bevy_common_assets::ron::RonAssetPlugin;
+use bevy_inspector_egui::egui::TextStyle;
 use serde::{Deserialize, Serialize};
 use tracing::Level;
 
 use crate::{
-    asset_tracking::LoadResource,
-    audio::{Voice, voice},
-    game::{
+    asset_tracking::LoadResource, audio::{Voice, voice}, game::{
         alchemy::{AlchemyEffect, AlchemyItems},
         level::LevelAssets,
-    },
-    screens::{Screen::Gameplay, gameplay::ShopArea::Storefront},
+    }, screens::{
+        Screen::Gameplay,
+        gameplay::ShopArea::{self, Storefront},
+    }, theme::palette::BLACK,
 };
 
 pub(super) fn plugin(app: &mut App) {
@@ -19,6 +20,8 @@ pub(super) fn plugin(app: &mut App) {
     app.add_systems(OnEnter(Gameplay), debug_dump_progression);
     app.add_systems(OnEnter(Gameplay), init_assets);
     app.add_systems(OnEnter(Storefront), play_quest_start_voiceline);
+    app.add_observer(show_textbox);
+    app.add_observer(remove_textbox);
 }
 
 fn debug_dump_progression(
@@ -129,5 +132,56 @@ pub fn on_click_play_quest_start_voiceline(
         commands.spawn_scene(voice(
             quest_assets.npc_voice_start.get(stage).unwrap().clone(),
         ));
+    }
+}
+
+fn show_textbox(
+    _: On<Insert<Voice>>,
+    mut commands: Commands,
+    progression_assets: Res<Progression>,
+    assets: Res<AssetServer>,
+) {
+    let stage = progression_assets.stage;
+    let quest = progression_assets.quests.get(stage).unwrap();
+    let text;
+    if !quest.finished {
+        text = &quest.npc_text_start;
+    } else {
+        text = &quest.npc_text_finish;
+    }
+    commands.spawn_scene(textbox(assets, text));
+}
+
+fn remove_textbox(
+    _: On<Remove<Voice>>,
+    mut commands: Commands,
+    textbox: Query<Entity, With<Textbox>>,
+) {
+    for entity in textbox {
+        commands.entity(entity).despawn();
+    }
+}
+
+#[derive(Component, Reflect, Debug, Clone, Default)]
+#[reflect(Component)]
+pub struct Textbox;
+
+fn textbox(assets: Res<AssetServer>, text: &String) -> impl Scene {
+    bsn! {
+        Textbox
+        ImageNode {image: {assets.load("images/gui/Textbox_Highlight.png")}, image_mode: NodeImageMode::Stretch, }
+        Node {
+            position_type: PositionType::Absolute,
+            bottom: px(40),
+            width: percent(100)
+            flex_direction: FlexDirection::Column,
+            align_items: AlignItems::Center
+        }
+        Children [
+            Text(text)
+            TextColor(BLACK)
+            TextFont {font_size: px(40.)}
+            Node {max_width: percent(90), align_items: AlignItems::Center, padding: UiRect { left: px(40), right: px(40), top: px(80), bottom: px(80) }}
+        ]
     }
 }
