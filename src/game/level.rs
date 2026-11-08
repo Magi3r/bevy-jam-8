@@ -4,14 +4,9 @@ use bevy::{audio::Source, prelude::*};
 use bevy_common_assets::ron::RonAssetPlugin;
 
 use crate::{
-    asset_tracking::LoadResource,
-    audio::music,
-    game::{
-        alchemy::{Recipe, RecipeBook},
-        animation::transition_scene,
-        tooltip,
-    },
-    screens::{
+    asset_tracking::LoadResource, audio::music, game::{
+        alchemy::{Recipe, RecipeBook}, animation::transition_scene, progression::Progression, tooltip,
+    }, screens::{
         Screen,
         gameplay::{
             ShopArea::{self, CookingArea, Storefront, TransitionAnimation},
@@ -21,8 +16,6 @@ use crate::{
 };
 
 pub(super) fn plugin(app: &mut App) {
-    app.init_asset::<RecipeBook>();
-    app.add_plugins(RonAssetPlugin::<RecipeBook>::new(&["ron"]));
     app.load_resource::<LevelAssets>();
     app.add_systems(OnEnter(Screen::Gameplay), spawn_level);
 }
@@ -92,6 +85,8 @@ pub struct LevelAssets {
     pub cauldron_stir_sfx: Handle<AudioSource>,
     #[dependency]
     pub cauldron_explosion: Vec<Handle<Image>>,
+    #[dependency]
+    pub progression: Handle<Progression>,
 }
 
 impl FromWorld for LevelAssets {
@@ -282,9 +277,11 @@ impl FromWorld for LevelAssets {
             fire_ambience_sfx: assets
                 .load("audio/sound_effects/Fire/engyclick-firewood-burning-sound-179862.mp3"),
             cauldron_stir_sfx: assets
-                .load("audio/sound_effects/Kessel_Couldron/CouldronStirring.mp3"),
+                .load("audio/sound_effects/stir_couldron.mp3"),
             // Other
             recipes: assets.load("recipes.ron"),
+            progression: assets.load("quests.ron"),
+
         }
     }
 }

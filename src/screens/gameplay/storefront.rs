@@ -2,11 +2,8 @@ use bevy::prelude::*;
 
 use crate::{
     game::{
-        item_scene,
-        level::{LevelAssets, LevelRoot},
-        on_click_morter,
-    },
-    screens::{Screen::Gameplay, gameplay::ShopArea},
+        item_scene, level::{LevelAssets, LevelRoot}, on_click_morter, progression::{Progression, QuestAssets},
+    }, screens::{Screen::Gameplay, gameplay::ShopArea},
 };
 
 pub(super) fn plugin(app: &mut App) {
@@ -22,7 +19,7 @@ pub struct Mortar;
 #[derive(Component, Clone, Default)]
 struct StorefrontScene;
 
-pub fn storefront_scene(level_assets: &Res<LevelAssets>) -> impl Scene {
+pub fn storefront_scene(level_assets: &Res<LevelAssets>, quest_assets: &Res<QuestAssets>, progression: &Res<Progression>) -> impl Scene {
     bsn! {
         #Storefront
         StorefrontScene
@@ -41,9 +38,14 @@ pub fn storefront_scene(level_assets: &Res<LevelAssets>) -> impl Scene {
                 @item_scene("Book".to_string(), "Study discovered recipes".to_string(), level_assets.book_storefront.clone(), level_assets.book_highlight_storefront.clone())
             --
                 @item_scene("Flasks".into(), "Holds one standard unit of potion.".into(), level_assets.flask.clone(), level_assets.flask_highlight.clone())
+                Transform::from_xyz(0.,0.,1.5)
             --
                 #Sunflower
                 @item_scene("Sunflower".into(), "About as hot as the sun, probably.".into(), level_assets.sunflower.clone(), level_assets.sunflower_highlight.clone())
+            --
+                #Npc
+                @item_scene(progression.quests.first().unwrap().npc_name.clone(), progression.quests.first().unwrap().npc_description.clone(), quest_assets.npc_assets.first().unwrap().clone(), quest_assets.npc_assets.first().unwrap().clone())
+                Transform::from_xyz(0.,0.,-0.5)
         ]
     }
 }
@@ -52,11 +54,13 @@ fn spawn_level(
     mut commands: Commands,
     level: Query<Entity, With<LevelRoot>>,
     level_assets: Res<LevelAssets>,
+    quest_assets: Res<QuestAssets>,
+    progression: Res<Progression>
 ) {
     for level in level {
         let child = commands
             .spawn_scene(bsn! {
-                @storefront_scene(&level_assets)
+                @storefront_scene(&level_assets, &quest_assets, &progression)
             })
             .id();
         commands.entity(level).add_child(child);

@@ -1,10 +1,15 @@
 use bevy::prelude::*;
+use bevy_common_assets::ron::RonAssetPlugin;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
 use crate::game::level::LevelAssets;
 
 pub(super) fn plugin(app: &mut App) {
+    app.init_asset::<RecipeBook>();
+    app.add_plugins(RonAssetPlugin::<RecipeBook>::new(&["recipes.ron"]));
+
+
     // #[cfg(feature = "dev")]
     // app.add_systems(Update, debug_dump_recipebook);
     // app.load_resource::<PlayerAssets>();
@@ -94,6 +99,14 @@ pub enum AlchemyItems {
     JellyNettle,
     NettleDust,
     HealthPotion,
+    Lead,
+    Gold,
+    Cheese
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub enum AlchemyEffect {
+    Explosion
 }
 
 #[cfg(test)]

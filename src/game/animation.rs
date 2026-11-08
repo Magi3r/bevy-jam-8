@@ -9,13 +9,9 @@ use std::time::Duration;
 use tracing::Level;
 
 use crate::{
-    AppSystems, PausableSystems,
-    game::level::LevelAssets,
-    screens::{
-        Screen::Gameplay,
-        gameplay::{
-            ShopArea::{self, CookingArea, Storefront},
-            cooking_area::Stirer,
+    AppSystems, PausableSystems, game::level::LevelAssets, screens::{
+        Screen::Gameplay, gameplay::{
+            ShopArea::{self, CookingArea, Storefront}, cooking_area::{Pull, Stirer},
         },
     },
 };
@@ -237,6 +233,7 @@ pub struct CauldronAnimation {
 fn reverse_anim_when_cauldron_empty_finished(
     animations: Query<(Entity, &mut CauldronAnimation, &mut Sprite)>,
     mut stirer: Query<&mut Visibility, With<Stirer>>,
+    mut pull: Query<&mut Visibility,  (With<Pull>, Without<Stirer>)>,
     level_assets: Res<LevelAssets>,
     mut commands: Commands,
 ) {
@@ -246,6 +243,7 @@ fn reverse_anim_when_cauldron_empty_finished(
                 anim.left_to_right = false;
             } else {
                 *stirer.single_mut().unwrap() = Visibility::Visible;
+                *pull.single_mut().unwrap() = Visibility::Visible;
                 commands.entity(entity).remove::<CauldronAnimation>();
                 sprite.image = level_assets.cauldron.clone();
             }

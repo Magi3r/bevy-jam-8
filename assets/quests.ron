@@ -1,0 +1,69 @@
+(quests: [
+Quest (
+    npc_name: "Wanderer",
+    npc_description: "Needs a Healing Potion",
+    npc_asset: "images/npc/Traveller.png",
+    npc_voice_start: "audio/sound_effects/VoiceLines/Part1_Wanderer.mp3",
+    npc_text_start: "Migthy witch, you and your cauldron must surely be capable of great things. I was bitten by wolfs, may you be able to help me? I can only offer these herbs I found. I am sure they will help you.",
+    npc_voice_finish: "audio/sound_effects/VoiceLines/Part2_Wanderer.mp3",
+    npc_text_finish: "Thank you, kind witch. I will tell of your deeds where ever I go.",
+    unlocks: JellyNettle,
+    requests: Item(HealthPotion),
+    started: true,
+    finished: false
+),
+Quest (
+    npc_name: "Kid",
+    npc_description: "Wants to see a big explosion",
+    npc_asset: "images/npc/Kid.png",
+    npc_voice_start: "audio/sound_effects/VoiceLines/Part1_Wanderer.mp3",
+    npc_text_start: "You there. I have heard you can do magic. Can you show me a big explosion? ",
+    npc_voice_finish: "audio/sound_effects/VoiceLines/Part1_Wanderer.mp3",
+    npc_text_finish: "Waow, that was amazing. I'm gonna tell all my friends about it.",
+    unlocks: JellyNettle,
+    requests: Effect(Explosion),
+    started: false,
+    finished: false
+),
+Quest (
+    npc_name: "Wizard",
+    npc_description: "Wants you to polish his orb",
+    npc_asset: "images/npc/Wizard.png",
+    npc_voice_start: "audio/sound_effects/VoiceLines/Part1_OldWizard.mp3",
+    npc_text_start: "I come to you in time of need, oh, great alchemist. The orb I use to ponder has become dull and useless. Without it I cannot protect the kingdom from comming threats. How am I to protect the kingdom with an orb that only shows me things which are boring to ponder.",
+    npc_voice_finish: "audio/sound_effects/VoiceLines/Part2_OldWizard.mp3",
+    npc_text_finish: "Ah thank you young one. Now that my orb of pondering is clear once more, it may show me the exciting lifes of the rat king and his rebellion again.",
+    unlocks: JellyNettle,
+    requests: Item(JellyNettle),
+    started: false,
+    finished: false
+),
+Quest (
+    npc_name: "King",
+    npc_description: "Wants Gold. Of course he does.",
+    npc_asset: "images/npc/King.png",
+    npc_voice_start: "audio/sound_effects/VoiceLines/Part1_Wanderer.mp3",
+    npc_text_start: "Greetings alchemist of the realm. I come to you in times of trouble for the kingdom. The coffers are empty and the peasants are starving. To do anything I need gold and so I come to you. Tales say alchemists like you may turn worthless metal to gold. Luckily, I have much lead. A metal of little use to me, so I request you turn it to gold for me and safe the kingdom.",
+    npc_voice_finish: "audio/sound_effects/VoiceLines/Part1_Wanderer.mp3",
+    npc_text_finish: "",
+    unlocks: Lead,
+    requests: Item(Gold),
+    started: false,
+    finished: false
+),
+Quest (
+    npc_name: "Suspicious Wanderer",
+    npc_description: "Wants Gold. The edible kind.",
+    npc_asset: "images/npc/Rat.png",
+    npc_voice_start: "audio/sound_effects/VoiceLines/Part1_GiantRat.mp3",
+    npc_text_start: "Thou name is known all under the world. Thy hands turn rock to human food. Our house is filled with lumpy lead. It is dark and tastes strange. But surely a human like you can turn it to gold. The king told and we heard it. But his gold is strange. It is soft yet too hard to bite. And it has no holes like propper gold. Wouldst thou turn this piece of useless junk to gold for us?",
+    npc_voice_finish: "audio/sound_effects/VoiceLines/Part2_GiantRat.mp3",
+    npc_text_finish: "You have proven a true genius. We have not had anything like this in ages. Our bretheren will come to you in need. If you help them, your name will be hailed in the new age of the rat. Our king will spare you, once he rules over this tiny kingdom.",
+    unlocks: JellyNettle,
+    requests: Item(Cheese),
+    started: false,
+    finished: false
+),
+],
+stage: 0
+)

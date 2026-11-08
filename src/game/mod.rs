@@ -4,19 +4,14 @@ use bevy::{
 };
 
 use crate::{
-    audio::sound_effect,
-    game::{
+    audio::sound_effect, game::{
         animation::{CauldronAnimation, FireAnimation, MortarAnimation, StirerAnimation},
         level::{CauldronAmbienceSFX, FireAmbienceSFX, LevelAssets},
-    },
-    screens::{
-        Screen::Gameplay,
-        gameplay::{
-            cooking_area::{Cauldron, Fire, Stirer},
-            storefront::Mortar,
+    }, screens::{
+        Screen::Gameplay, gameplay::{
+            cooking_area::{Cauldron, Fire, Pull, Stirer}, storefront::Mortar,
         },
-    },
-    theme::palette::BUTTON_BACKGROUND,
+    }, theme::palette::BUTTON_BACKGROUND,
 };
 
 const TOOLTIP_OFFSET: Vec2 = Vec2::new(15.0, 15.0);
@@ -24,9 +19,10 @@ const TOOLTIP_OFFSET: Vec2 = Vec2::new(15.0, 15.0);
 pub mod alchemy;
 pub mod animation;
 pub mod level;
+pub mod progression;
 
 pub(super) fn plugin(app: &mut App) {
-    app.add_plugins((alchemy::plugin, level::plugin, animation::plugin));
+    app.add_plugins((alchemy::plugin, progression::plugin, level::plugin, animation::plugin));
     app.add_systems(
         Update,
         (
@@ -114,7 +110,7 @@ fn tooltip() -> impl Scene {
             width: px(600),
             justify_content: JustifyContent::Center,
             align_items: AlignItems::Center,
-            padding: UiRect::all(px(10)),
+            padding: UiRect::top(px(40)),
             flex_direction: FlexDirection::Column,
             row_gap: px(5),
         }
@@ -212,6 +208,7 @@ pub fn on_click_cauldron_empty(
     _event: On<PointerClick>,
     cauldron: Query<Entity, (With<Cauldron>, Without<CauldronAnimation>)>,
     mut stirer: Query<&mut Visibility, With<Stirer>>,
+    mut pull: Query<&mut Visibility, (With<Pull>, Without<Stirer>)>,
     level_assets: If<Res<LevelAssets>>,
     mut commands: Commands,
 ) {
@@ -221,6 +218,7 @@ pub fn on_click_cauldron_empty(
             .entity(cauldron)
             .insert_if_new(CauldronAnimation::new());
         *stirer.single_mut().unwrap() = Visibility::Hidden;
+        *pull.single_mut().unwrap() = Visibility::Hidden;
         commands.spawn_scene(sound_effect(level_assets.cauldron_empty_sfx.clone()));
     }
 }
