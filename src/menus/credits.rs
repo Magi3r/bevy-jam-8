@@ -12,7 +12,7 @@ pub(super) fn plugin(app: &mut App) {
     );
 
     app.load_resource::<CreditsAssets>();
-    app.add_systems(OnEnter(Menu::Credits), start_credits_music);
+    // app.add_systems(OnEnter(Menu::Credits), start_credits_music);
 }
 
 fn spawn_credits_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
@@ -33,6 +33,10 @@ fn spawn_credits_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
             --
             @assets()
             --
+            @widget::header("Voices")
+            --
+            @voices()
+            --
             @widget::button("Back", go_back_on_click, button_image.clone(), highlight.clone())
         ]
     });
@@ -40,20 +44,34 @@ fn spawn_credits_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
 
 fn created_by() -> impl Scene {
     grid(vec![
-        ["Joe Shmoe", "Implemented alligator wrestling AI"],
-        ["Jane Doe", "Made the music for the alien invasion"],
+        ["Magi3r", "Code"],
+        ["Goldhand", "Art and Code"],
+        ["Anabelle Kahns", "Sounds"],
+        ["Palladium02", "Code"],
     ])
 }
 
 fn assets() -> impl Scene {
     grid(vec![
-        ["Ducky sprite", "CC0 by Caz Creates Games"],
+        ["Sound Effects", "by Anabelle Kahns or via Pixabay"],
         ["Button SFX", "CC0 by Jaszunio15"],
-        ["Music", "CC BY 3.0 by Kevin MacLeod"],
+        ["Images", "by Goldhand"],
+        ["Font", "by MCKL via Google Fonts"],
         [
             "Bevy logo",
             "All rights reserved by the Bevy Foundation, permission granted for splash screen use when unmodified",
         ],
+    ])
+}
+
+fn voices() -> impl Scene {
+    grid(vec![
+        ["Wanderer", "Anabelle Kahns"],
+        ["Kid", "Goldhand"],
+        ["Wizard", "Benjamin von Freden"],
+        ["King", ""],
+        ["Rat", "Anabelle Kahns"]
+
     ])
 }
 
