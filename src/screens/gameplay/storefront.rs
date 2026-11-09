@@ -2,14 +2,26 @@ use bevy::prelude::*;
 
 use crate::{
     game::{
-        alchemy::{AlchemyItems, GetOnClick}, item_scene, level::{LevelAssets, LevelRoot}, on_click_morter, progression::{Npc, Progression, QuestAssets, on_click_play_quest_start_voiceline}, tool_inventory::ElementOrItem,
-    }, screens::{Screen::Gameplay, gameplay::ShopArea},
+        alchemy::{AlchemyItems, GetOnClick},
+        item_scene,
+        level::{LevelAssets, LevelRoot},
+        on_click_morter,
+        progression::{Npc, Progression, QuestAssets, on_click_play_quest_start_voiceline},
+        tool_inventory::{MortarInventory, NPCInventory},
+    },
+    screens::{Screen::Gameplay, gameplay::ShopArea},
 };
 
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(
         OnEnter(ShopArea::Storefront),
-        spawn_level.run_if(in_state(Gameplay)),
+        (
+            spawn_level,
+            spawn_inventory_display,
+            spawn_npc_inventory_display,
+        )
+            .chain()
+            .run_if(in_state(Gameplay)),
     );
 }
 
@@ -71,5 +83,108 @@ fn spawn_level(
             })
             .id();
         commands.entity(level).add_child(child);
+    }
+}
+
+fn spawn_inventory_display(
+    mut commands: Commands,
+    assets: Res<AssetServer>,
+    cauldron_inv: Res<MortarInventory>,
+) {
+    let conatiner = commands.spawn_scene(bsn![
+        #MortarIventoryList
+        Node {
+            position_type: PositionType::Absolute,
+            justify_content: JustifyContent::Start,
+            align_items: AlignItems::FlexStart,
+            flex_wrap: FlexWrap::Wrap,
+            row_gap: px(2),
+            column_gap: px(2),
+            padding: UiRect::all(px(4)),
+            width: px(1000),
+            height: px(250),
+            left: px(700),
+            top: px(625),
+        }
+        DespawnOnExit<ShopArea>(ShopArea::Storefront)
+    ]);
+
+    let container_id = conatiner.id();
+
+    for (item, quantity) in &cauldron_inv.contents {
+        let item_clone = item.clone();
+        let quantity_str = quantity.to_string();
+
+        let id = commands
+            .spawn_scene(bsn! {
+                ImageNode {image: {assets.load(item_clone.image_path())}}
+                Node {
+                    justify_content: JustifyContent::Center,
+                    align_items: AlignItems::Center,
+                    flex_wrap: FlexWrap::Wrap,
+                    row_gap: px(2),
+                    column_gap: px(2),
+                    padding: UiRect::all(px(4)),
+                    width: px(125),
+                    height: px(125),
+                }
+                Children [
+                    Text(quantity_str)
+                    TextFont { font_size: px(40) }
+                ]
+            })
+            .id();
+
+        commands.entity(container_id).add_child(id);
+    }
+}
+
+fn spawn_npc_inventory_display(
+    mut commands: Commands,
+    assets: Res<AssetServer>,
+    cauldron_inv: Res<NPCInventory>,
+) {
+    let conatiner = commands.spawn_scene(bsn![
+        #NPCIventoryList
+        Node {
+            position_type: PositionType::Absolute,
+            justify_content: JustifyContent::Center,
+            align_items: AlignItems::Start,
+            align_content: AlignContent::Start,
+            flex_wrap: FlexWrap::Wrap,
+            row_gap: px(2),
+            column_gap: px(2),
+            padding: UiRect::all(px(4)),
+            width: px(300),
+            height: px(500),
+            left: px(200),
+            top: px(175),
+        }
+        DespawnOnExit<ShopArea>(ShopArea::Storefront)
+    ]);
+
+    let container_id = conatiner.id();
+
+    for (item, quantity) in &cauldron_inv.contents {
+        let item_clone = item.clone();
+        let quantity_str = quantity.to_string();
+
+        let id = commands
+            .spawn_scene(bsn! {
+                ImageNode {image: {assets.load(item_clone.image_path())}}
+                Node {
+                    justify_content: JustifyContent::Center,
+                    align_items: AlignItems::Center,
+                    flex_wrap: FlexWrap::Wrap,
+                    row_gap: px(2),
+                    column_gap: px(2),
+                    padding: UiRect::all(px(4)),
+                    width: px(125),
+                    height: px(125),
+                }
+            })
+            .id();
+
+        commands.entity(container_id).add_child(id);
     }
 }

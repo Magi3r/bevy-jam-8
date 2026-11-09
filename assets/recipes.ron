@@ -34,7 +34,7 @@
         discovered: false,
     ),
     (
-        name: "Crush Pondering Orb",
+        name: "Crush Unclear Orb",
         ingredients: [
             (Alchemy(OrbUnclear), 1)
         ],
@@ -45,12 +45,26 @@
         discovered: false,
     ),
     (
-        name: "Crush Pondering Orb",
+        name: "Crush Clear Orb",
         ingredients: [
             (Alchemy(OrbClear), 1)
         ],
         produces: [
             (Alchemy(OrbBroken), 1)
+        ],
+        uses: Mortar,
+        discovered: false,
+    ),
+    (
+        name: "Pondering Orb",
+        ingredients: [
+            (Alchemy(OrbBroken), 1),
+            (Element(Soul), 5),
+            (Element(Stone), 1)
+
+        ],
+        produces: [
+            (Alchemy(OrbClear), 1)
         ],
         uses: Mortar,
         discovered: false,

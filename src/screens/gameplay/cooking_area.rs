@@ -1,4 +1,4 @@
-use bevy::prelude::*;
+use bevy::{prelude::*, reflect::display};
 
 use crate::{
     audio::{music, sound_effect},
@@ -7,6 +7,7 @@ use crate::{
         fire_scene, item_scene,
         level::{LevelAssets, LevelRoot},
         on_click_cauldron_empty, on_click_stir_cauldron, on_click_toggle_fire_on_off,
+        tool_inventory::CauldronInventory,
     },
     screens::{Screen::Gameplay, gameplay::ShopArea},
 };
@@ -14,7 +15,9 @@ use crate::{
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(
         OnEnter(ShopArea::CookingArea),
-        (spawn_level, spawn_fire).chain().run_if(in_state(Gameplay)),
+        (spawn_level, spawn_fire, spawn_inventory_display)
+            .chain()
+            .run_if(in_state(Gameplay)),
     );
     app.init_resource::<FireState>();
 }
@@ -119,5 +122,58 @@ fn spawn_level(
             })
             .id();
         commands.entity(level).add_child(child);
+    }
+}
+
+fn spawn_inventory_display(
+    mut commands: Commands,
+    assets: Res<AssetServer>,
+    cauldron_inv: Res<CauldronInventory>,
+) {
+    let conatiner = commands.spawn_scene(bsn![
+        #CauldronIventoryList
+        Node {
+            position_type: PositionType::Absolute,
+            justify_content: JustifyContent::Center,
+            align_items: AlignItems::FlexStart,
+            flex_wrap: FlexWrap::Wrap,
+            row_gap: px(2),
+            column_gap: px(2),
+            padding: UiRect::all(px(4)),
+            width: px(1000),
+            height: px(250),
+            left: px(0),
+            top: px(520),
+        }
+        DespawnOnExit<ShopArea>(ShopArea::CookingArea)
+    ]);
+
+    let container_id = conatiner.id();
+
+    for (item, quantity) in &cauldron_inv.contents {
+        let item_clone = item.clone();
+        let quantity_str = quantity.to_string();
+
+        let id = commands
+            .spawn_scene(bsn! {
+                ImageNode {image: {assets.load(item_clone.image_path())}}
+                Node {
+                    justify_content: JustifyContent::Center,
+                    align_items: AlignItems::Center,
+                    flex_wrap: FlexWrap::Wrap,
+                    row_gap: px(2),
+                    column_gap: px(2),
+                    padding: UiRect::all(px(4)),
+                    width: px(125),
+                    height: px(125),
+                }
+                Children [
+                    Text(quantity_str)
+                    TextFont { font_size: px(40) }
+                ]
+            })
+            .id();
+
+        commands.entity(container_id).add_child(id);
     }
 }

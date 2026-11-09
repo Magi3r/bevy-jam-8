@@ -192,9 +192,7 @@ fn on_click_do_something_with_item(
         {
             let entity = event.entity;
             // destroy if click on fire
-            if fire.get(entity).is_ok()
-                && fire_state.0
-            {
+            if fire.get(entity).is_ok() && fire_state.0 {
                 println!("Fire!");
                 commands.entity(held_entity).despawn();
                 held_item.entity = None;
@@ -218,13 +216,13 @@ fn on_click_do_something_with_item(
                 if let Some(item) = mortar_inventory
                     .contents
                     .iter_mut()
-                    .find(|item| item.0 == ElementOrItem::Ingredient(held_item_item.clone()))
+                    .find(|item| item.0 == ElementOrItem::Item(held_item_item.clone()))
                 {
                     item.1 += 1
                 } else {
                     mortar_inventory
                         .contents
-                        .push((ElementOrItem::Ingredient(held_item_item.clone()), 1));
+                        .push((ElementOrItem::Item(held_item_item.clone()), 1));
                 }
             }
             // do something if on cauldron
@@ -236,13 +234,13 @@ fn on_click_do_something_with_item(
                 if let Some(item) = cauldron_inventory
                     .contents
                     .iter_mut()
-                    .find(|item| item.0 == ElementOrItem::Ingredient(held_item_item.clone()))
+                    .find(|item| item.0 == ElementOrItem::Item(held_item_item.clone()))
                 {
                     item.1 += 1
                 } else {
                     cauldron_inventory
                         .contents
-                        .push((ElementOrItem::Ingredient(held_item_item.clone()), 1));
+                        .push((ElementOrItem::Item(held_item_item.clone()), 1));
                 }
             }
         }

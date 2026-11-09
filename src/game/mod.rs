@@ -4,15 +4,21 @@ use bevy::{
 };
 
 use crate::{
-    audio::sound_effect, game::{
-        alchemy::HeldItem, animation::{CauldronAnimation, FireAnimation, MortarAnimation, StirerAnimation}, level::{CauldronAmbienceSFX, FireAmbienceSFX, LevelAssets}, tool_inventory::{CauldronInventory, MortarInventory},
-    }, screens::{
+    audio::sound_effect,
+    game::{
+        alchemy::{AlchemyItems, HeldItem},
+        animation::{CauldronAnimation, FireAnimation, MortarAnimation, StirerAnimation},
+        level::{CauldronAmbienceSFX, FireAmbienceSFX, LevelAssets},
+        tool_inventory::{CauldronInventory, ElementOrItem, MortarInventory, NPCInventory},
+    },
+    screens::{
         Screen::Gameplay,
         gameplay::{
             cooking_area::{Cauldron, Fire, FireState, Pull, Stirer},
             storefront::Mortar,
         },
-    }, theme::palette::BUTTON_BACKGROUND,
+    },
+    theme::palette::BUTTON_BACKGROUND,
 };
 
 const TOOLTIP_OFFSET: Vec2 = Vec2::new(15.0, 15.0);
@@ -45,6 +51,7 @@ pub(super) fn plugin(app: &mut App) {
 
     app.init_resource::<CauldronInventory>();
     app.init_resource::<MortarInventory>();
+    app.init_resource::<NPCInventory>();
 }
 
 #[derive(Component)]
@@ -214,6 +221,7 @@ fn on_hover_show_highlight(
 pub fn on_click_cauldron_empty(
     _event: On<PointerClick>,
     cauldron: Query<Entity, (With<Cauldron>, Without<CauldronAnimation>)>,
+    mut cauldron_inventory: ResMut<CauldronInventory>,
     mut stirer: Query<&mut Visibility, With<Stirer>>,
     mut pull: Query<&mut Visibility, (With<Pull>, Without<Stirer>)>,
     level_assets: If<Res<LevelAssets>>,
@@ -228,6 +236,8 @@ pub fn on_click_cauldron_empty(
         *pull.single_mut().unwrap() = Visibility::Hidden;
         commands.spawn_scene(sound_effect(level_assets.cauldron_empty_sfx.clone()));
     }
+
+    *cauldron_inventory = CauldronInventory::default();
 }
 
 pub fn on_click_stir_cauldron(
@@ -258,7 +268,6 @@ pub fn on_click_morter(
 ) {
     // ignore click when item in hand
     if held_item.entity.is_none() {
-
         if let Ok(mortar) = mortar.single() {
             commands
                 .entity(mortar)
@@ -280,7 +289,6 @@ pub fn on_click_toggle_fire_on_off(
 ) {
     // ignore click when item in hand
     if held_item.entity.is_none() {
-
         // do not start cauldron animation again if its already running
         if let Ok((entity, mut sprite)) = fire.single_mut() {
             if fire_state.0 {
