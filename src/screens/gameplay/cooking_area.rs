@@ -1,4 +1,4 @@
-use bevy::{prelude::*, reflect::display};
+use bevy::{ecs::relationship::RelationshipSourceCollection, prelude::*, reflect::display};
 
 use crate::{
     audio::{music, sound_effect},
@@ -18,6 +18,12 @@ pub(super) fn plugin(app: &mut App) {
         (spawn_level, spawn_fire, spawn_inventory_display)
             .chain()
             .run_if(in_state(Gameplay)),
+    );
+    app.add_systems(
+        Update,
+        update_inventory_display
+            .run_if(resource_changed::<CauldronInventory>)
+            .run_if(in_state(ShopArea::CookingArea)),
     );
     app.init_resource::<FireState>();
 }
@@ -125,13 +131,17 @@ fn spawn_level(
     }
 }
 
+#[derive(Component, Default, Clone)]
+pub struct CauldronInventoryList;
+
 fn spawn_inventory_display(
     mut commands: Commands,
     assets: Res<AssetServer>,
     cauldron_inv: Res<CauldronInventory>,
 ) {
     let conatiner = commands.spawn_scene(bsn![
-        #CauldronIventoryList
+        #CauldronInventoryList
+        CauldronInventoryList
         Node {
             position_type: PositionType::Absolute,
             justify_content: JustifyContent::Center,
@@ -146,6 +156,7 @@ fn spawn_inventory_display(
             top: px(520),
         }
         DespawnOnExit<ShopArea>(ShopArea::CookingArea)
+        Pickable::IGNORE
     ]);
 
     let container_id = conatiner.id();
@@ -175,5 +186,43 @@ fn spawn_inventory_display(
             .id();
 
         commands.entity(container_id).add_child(id);
+    }
+}
+
+fn update_inventory_display(
+    mut commands: Commands,
+    assets: Res<AssetServer>,
+    cauldron_inv: Res<CauldronInventory>,
+    container: Query<Entity, With<CauldronInventoryList>>,
+) {
+    if let Ok(container) = container.single() {
+        commands.entity(container).despawn_children();
+
+        for (item, quantity) in &cauldron_inv.contents {
+            let item_clone = item.clone();
+            let quantity_str = quantity.to_string();
+
+            let id = commands
+                .spawn_scene(bsn! {
+                    ImageNode {image: {assets.load(item_clone.image_path())}}
+                    Node {
+                        justify_content: JustifyContent::Center,
+                        align_items: AlignItems::Center,
+                        flex_wrap: FlexWrap::Wrap,
+                        row_gap: px(2),
+                        column_gap: px(2),
+                        padding: UiRect::all(px(4)),
+                        width: px(125),
+                        height: px(125),
+                    }
+                    Children [
+                        Text(quantity_str)
+                        TextFont { font_size: px(40) }
+                    ]
+                })
+                .id();
+
+            commands.entity(container).add_child(id);
+        }
     }
 }

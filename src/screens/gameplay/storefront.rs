@@ -23,6 +23,18 @@ pub(super) fn plugin(app: &mut App) {
             .chain()
             .run_if(in_state(Gameplay)),
     );
+    app.add_systems(
+        Update,
+        update_inventory_display
+            .run_if(resource_changed::<MortarInventory>)
+            .run_if(in_state(ShopArea::Storefront)),
+    );
+    app.add_systems(
+        Update,
+        update_npc_inventory_display
+            .run_if(resource_changed::<NPCInventory>)
+            .run_if(in_state(ShopArea::Storefront)),
+    );
 }
 
 #[derive(Component, Clone, Default)]
@@ -86,16 +98,23 @@ fn spawn_level(
     }
 }
 
+#[derive(Component, Default, Clone)]
+pub struct MortarInventoryList;
+
+#[derive(Component, Default, Clone)]
+pub struct NPCInventoryList;
+
 fn spawn_inventory_display(
     mut commands: Commands,
     assets: Res<AssetServer>,
     cauldron_inv: Res<MortarInventory>,
 ) {
     let conatiner = commands.spawn_scene(bsn![
-        #MortarIventoryList
+        #MortarInventoryList
+        MortarInventoryList
         Node {
             position_type: PositionType::Absolute,
-            justify_content: JustifyContent::Start,
+            justify_content: JustifyContent::Center,
             align_items: AlignItems::FlexStart,
             flex_wrap: FlexWrap::Wrap,
             row_gap: px(2),
@@ -107,6 +126,7 @@ fn spawn_inventory_display(
             top: px(625),
         }
         DespawnOnExit<ShopArea>(ShopArea::Storefront)
+        Pickable::IGNORE
     ]);
 
     let container_id = conatiner.id();
@@ -146,6 +166,7 @@ fn spawn_npc_inventory_display(
 ) {
     let conatiner = commands.spawn_scene(bsn![
         #NPCIventoryList
+        NPCInventoryList
         Node {
             position_type: PositionType::Absolute,
             justify_content: JustifyContent::Center,
@@ -161,6 +182,7 @@ fn spawn_npc_inventory_display(
             top: px(175),
         }
         DespawnOnExit<ShopArea>(ShopArea::Storefront)
+        Pickable::IGNORE
     ]);
 
     let container_id = conatiner.id();
@@ -186,5 +208,81 @@ fn spawn_npc_inventory_display(
             .id();
 
         commands.entity(container_id).add_child(id);
+    }
+}
+
+fn update_inventory_display(
+    mut commands: Commands,
+    assets: Res<AssetServer>,
+    mortar_inv: Res<MortarInventory>,
+    container: Query<Entity, With<MortarInventoryList>>,
+) {
+    if let Ok(container) = container.single() {
+        commands.entity(container).despawn_children();
+
+        for (item, quantity) in &mortar_inv.contents {
+            let item_clone = item.clone();
+            let quantity_str = quantity.to_string();
+
+            let id = commands
+                .spawn_scene(bsn! {
+                    ImageNode {image: {assets.load(item_clone.image_path())}}
+                    Node {
+                        justify_content: JustifyContent::Center,
+                        align_items: AlignItems::Center,
+                        flex_wrap: FlexWrap::Wrap,
+                        row_gap: px(2),
+                        column_gap: px(2),
+                        padding: UiRect::all(px(4)),
+                        width: px(125),
+                        height: px(125),
+                    }
+                    Children [
+                        Text(quantity_str)
+                        TextFont { font_size: px(40) }
+                    ]
+                })
+                .id();
+
+            commands.entity(container).add_child(id);
+        }
+    }
+}
+
+fn update_npc_inventory_display(
+    mut commands: Commands,
+    assets: Res<AssetServer>,
+    npc_inv: Res<NPCInventory>,
+    container: Query<Entity, With<NPCInventoryList>>,
+) {
+    if let Ok(container) = container.single() {
+        commands.entity(container).despawn_children();
+
+        for (item, quantity) in &npc_inv.contents {
+            let item_clone = item.clone();
+            let quantity_str = quantity.to_string();
+
+            let id = commands
+                .spawn_scene(bsn! {
+                    ImageNode {image: {assets.load(item_clone.image_path())}}
+                    Node {
+                        justify_content: JustifyContent::Center,
+                        align_items: AlignItems::Center,
+                        flex_wrap: FlexWrap::Wrap,
+                        row_gap: px(2),
+                        column_gap: px(2),
+                        padding: UiRect::all(px(4)),
+                        width: px(125),
+                        height: px(125),
+                    }
+                    Children [
+                        Text(quantity_str)
+                        TextFont { font_size: px(40) }
+                    ]
+                })
+                .id();
+
+            commands.entity(container).add_child(id);
+        }
     }
 }
