@@ -1,6 +1,9 @@
 use bevy::prelude::*;
 
-use crate::game::alchemy::{AlchemyFluid, AlchemyItems, Element::{self, Stone}};
+use crate::game::alchemy::{
+    AlchemyFluid, AlchemyItems,
+    Element::{self, Stone},
+};
 
 #[derive(Resource, Clone)]
 pub struct CauldronInventory {

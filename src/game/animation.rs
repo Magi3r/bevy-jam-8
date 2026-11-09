@@ -31,9 +31,11 @@ pub(super) fn plugin(app: &mut App) {
                 update_cauldron_empty_animation_timer,
                 update_stirer_animation_timer,
                 update_mortar_animation_timer,
+                update_explosion_timer,
             )
                 .in_set(AppSystems::TickTimers),
             (
+                update_explosion_sprite.run_if(in_state(ShopArea::CookingArea)),
                 update_fire_animation_sprite.run_if(in_state(ShopArea::CookingArea)),
                 update_transition_animation_sprite.run_if(in_state(ShopArea::TransitionAnimation)),
                 next_state_when_transition_finished.run_if(in_state(ShopArea::TransitionAnimation)),
@@ -105,6 +107,58 @@ impl FireAnimation {
 /// Update the texture to reflect changes in the animation.
 fn update_fire_animation_sprite(
     mut query: Query<(&FireAnimation, &mut Sprite)>,
+    level_assets: If<Res<LevelAssets>>,
+) {
+    for (animation, mut sprite) in &mut query {
+        if animation.changed() {
+            sprite.image = level_assets.fire.get(animation.frame).unwrap().clone();
+        }
+    }
+}
+
+/// Update the animation timer.
+fn update_explosion_timer(time: Res<Time>, mut query: Query<&mut Explostion>) {
+    for mut animation in &mut query {
+        animation.update_timer(time.delta());
+    }
+}
+
+/// Component that tracks fire's animation state.
+#[derive(Component, Reflect, Default, Clone)]
+#[reflect(Component)]
+pub struct Explostion {
+    timer: Timer,
+    frame: usize,
+}
+
+impl Explostion {
+    pub const ANIMATION_FRAMES: usize = 48;
+    const ANIMATION_INTERVAL: Duration = Duration::from_millis(42);
+    /// Update animation timers.
+    pub fn update_timer(&mut self, delta: Duration) {
+        self.timer.tick(delta);
+        if !self.timer.is_finished() {
+            return;
+        }
+        self.frame = (self.frame + 1) % Self::ANIMATION_FRAMES;
+    }
+
+    /// Whether animation changed this tick.
+    pub fn changed(&self) -> bool {
+        self.timer.is_finished()
+    }
+
+    pub(crate) fn new() -> Self {
+        Self {
+            timer: Timer::new(Self::ANIMATION_INTERVAL, TimerMode::Repeating),
+            frame: 0,
+        }
+    }
+}
+
+/// Update the texture to reflect changes in the animation.
+fn update_explosion_sprite(
+    mut query: Query<(&Explostion, &mut Sprite)>,
     level_assets: If<Res<LevelAssets>>,
 ) {
     for (animation, mut sprite) in &mut query {

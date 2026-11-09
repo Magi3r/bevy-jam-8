@@ -5,8 +5,11 @@ use std::collections::HashMap;
 
 use crate::{
     game::{
-        level::LevelAssets, progression::Npc, tool_inventory::{CauldronInventory, ElementOrItem, MortarInventory, NPCInventory},
-    }, screens::{
+        level::LevelAssets,
+        progression::Npc,
+        tool_inventory::{CauldronInventory, ElementOrItem, MortarInventory, NPCInventory},
+    },
+    screens::{
         Screen::Gameplay,
         gameplay::{
             cooking_area::{Cauldron, Fire, FireState},
@@ -99,7 +102,9 @@ impl Ingredient {
     }
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord, Hash, Reflect, Default)]
+#[derive(
+    Debug, Clone, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord, Hash, Reflect, Default,
+)]
 pub enum Element {
     #[default]
     Metal,

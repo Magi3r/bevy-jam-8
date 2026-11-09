@@ -2,13 +2,26 @@ use std::time::Duration;
 
 use bevy::{ecs::relationship::RelationshipSourceCollection, prelude::*, reflect::display};
 
-use crate::{ game::{alchemy::{Draggable, Element, HeldItem}, animation::FireAnimation, fire_scene, item_scene, level::{LevelAssets, LevelRoot}, on_click_cauldron_empty, on_click_stir_cauldron, on_click_toggle_fire_on_off, tool_inventory::{CauldronInventory, ElementOrItem}}, menus::Menu, screens::{Screen::Gameplay, gameplay::{ShopArea, storefront::alchemy_item_to_herb_struct}},
+use crate::{
+    game::{
+        alchemy::{Draggable, Element, HeldItem},
+        animation::FireAnimation,
+        fire_scene, item_scene,
+        level::{LevelAssets, LevelRoot},
+        on_click_cauldron_empty, on_click_stir_cauldron, on_click_toggle_fire_on_off,
+        tool_inventory::{CauldronInventory, ElementOrItem},
+    },
+    menus::Menu,
+    screens::{
+        Screen::Gameplay,
+        gameplay::{ShopArea, storefront::alchemy_item_to_herb_struct},
+    },
 };
 
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(
         OnEnter(ShopArea::CookingArea),
-        (spawn_level, spawn_fire, spawn_inventory_display)
+        (spawn_level, spawn_fire, spawn_inventory_display, update_inventory_display)
             .chain()
             .run_if(in_state(Gameplay)),
     );
@@ -182,7 +195,7 @@ fn spawn_inventory_display(
     assets: Res<AssetServer>,
     cauldron_inv: Res<CauldronInventory>,
 ) {
-    let conatiner = commands.spawn_scene(bsn!{
+    let conatiner = commands.spawn_scene(bsn! {
         #CauldronInventoryList
         CauldronInventoryList
         Node {
@@ -236,7 +249,6 @@ fn spawn_inventory_display(
 #[reflect(Component)]
 struct ItemInCauldron(ElementOrItem, usize);
 
-
 fn update_inventory_display(
     mut commands: Commands,
     assets: Res<AssetServer>,
@@ -278,9 +290,16 @@ fn update_inventory_display(
     }
 }
 
-fn on_click_get_item_from_cauldron(event: On<PointerClick>, mut held_item: ResMut<HeldItem>, mut inv: ResMut<CauldronInventory>, mut item_in_cauldron: Query<&mut ItemInCauldron>, mut commands: Commands,) {
+fn on_click_get_item_from_cauldron(
+    event: On<PointerClick>,
+    mut held_item: ResMut<HeldItem>,
+    mut inv: ResMut<CauldronInventory>,
+    mut item_in_cauldron: Query<&mut ItemInCauldron>,
+    mut commands: Commands,
+) {
     if held_item.entity.is_none() {
-        if let Ok(ItemInCauldron(ElementOrItem::Item(item),_ )) = item_in_cauldron.get(event.entity) {
+        if let Ok(ItemInCauldron(ElementOrItem::Item(item), _)) = item_in_cauldron.get(event.entity)
+        {
             let item_struct = alchemy_item_to_herb_struct(item);
             let id = commands
                 .spawn_scene(bsn! {
@@ -291,23 +310,21 @@ fn on_click_get_item_from_cauldron(event: On<PointerClick>, mut held_item: ResMu
                 .id();
             held_item.entity = Some(id);
             held_item.item = Some(item.clone());
-            let mut i= 0;
+            let mut i = 0;
             let mut remove = None;
             for (cont, quant) in &mut inv.contents {
                 if *cont == ElementOrItem::Item(item.clone()) {
-                    if *quant -1 == 0 {
+                    if *quant - 1 == 0 {
                         remove = Some(i);
                     } else {
-                        *quant  -= 1;
+                        *quant -= 1;
                     }
                 }
-                i+=1;
+                i += 1;
             }
             if let Some(remove) = remove {
                 inv.contents.remove(remove);
             }
-
         }
     }
 }
-

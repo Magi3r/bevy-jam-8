@@ -1,3 +1,5 @@
+use std::time::Duration;
+
 use bevy::prelude::*;
 use bevy_common_assets::ron::RonAssetPlugin;
 use bevy_inspector_egui::egui::TextStyle;
@@ -5,23 +7,21 @@ use serde::{Deserialize, Serialize};
 use tracing::Level;
 
 use crate::{
-    asset_tracking::LoadResource,
-    audio::{Voice, voice},
-    game::{
+    AppSystems::TickTimers, asset_tracking::LoadResource, audio::{Voice, voice}, game::{
         alchemy::{AlchemyEffect, AlchemyItems},
         level::LevelAssets,
         progression,
         tool_inventory::{ElementOrItem, NPCInventory},
-    },
-    screens::{
+    }, screens::{
         Screen::Gameplay,
         gameplay::ShopArea::{self, Storefront},
-    },
-    theme::palette::BLACK,
+    }, theme::palette::BLACK,
 };
 
 pub(super) fn plugin(app: &mut App) {
     app.init_asset::<Progression>();
+    app.add_systems(Update, update_NextCustomerTimeout_timer.in_set(TickTimers));
+    app.add_systems(Update, reset_scene_on_new_customer );
     app.add_plugins(RonAssetPlugin::<Progression>::new(&["quests.ron"]));
     app.add_systems(OnEnter(Gameplay), init_assets);
     app.add_systems(OnEnter(Storefront), play_quest_start_voiceline);
@@ -29,8 +29,19 @@ pub(super) fn plugin(app: &mut App) {
     app.add_observer(remove_textbox);
     #[cfg(feature = "dev")]
     app.add_systems(OnEnter(Gameplay), debug_dump_progression);
-    app.add_systems(Update, check_npc_inventory_has_requested.run_if(in_state(Gameplay)).run_if(resource_changed::<NPCInventory>));
-    app.add_systems(Update, (play_thanks_when_finished, fill_initial_npc_inv).run_if(in_state(Gameplay)).run_if(resource_exists::<Progression>.and_then(resource_changed::<Progression>)));
+    app.add_systems(
+        Update,
+        check_npc_inventory_has_requested
+            .run_if(in_state(Gameplay))
+            .run_if(resource_changed::<NPCInventory>),
+    );
+    app.add_systems(
+        Update,
+        (play_thanks_when_finished, fill_initial_npc_inv)
+            .run_if(in_state(Gameplay))
+            .run_if(resource_exists::<Progression>.and_then(resource_changed::<Progression>)),
+    );
+    app.add_observer(progress_to_next_stage);
 }
 
 fn debug_dump_progression(
@@ -115,6 +126,62 @@ impl QuestAssets {
     }
 }
 
+fn progress_to_next_stage(_: On<Remove<Voice>>, mut progression: ResMut<Progression>) {
+    let stage = progression.stage;
+    let quest = progression.quests.get(stage).unwrap();
+    if quest.finished {
+        progression.stage += 1;
+    }
+}
+
+/// Update the animation timer.
+fn update_NextCustomerTimeout_timer(time: Res<Time>, mut query: Query<&mut NextCustomerTimeout>) {
+    for mut animation in &mut query {
+        animation.update_timer(time.delta());
+    }
+}
+
+/// Component that tracks fire's animation state.
+#[derive(Component, Reflect, Default, Clone)]
+#[reflect(Component)]
+pub struct NextCustomerTimeout {
+    timer: Timer,
+}
+
+impl NextCustomerTimeout {
+    const ANIMATION_INTERVAL: Duration = Duration::from_secs(5);
+    /// Update animation timers.
+    pub fn update_timer(&mut self, delta: Duration) {
+        self.timer.tick(delta);
+        if !self.timer.is_finished() {
+            return;
+        }
+    }
+
+    /// Whether animation changed this tick.
+    pub fn changed(&self) -> bool {
+        self.timer.is_finished()
+    }
+
+    pub(crate) fn new() -> Self {
+        Self {
+            timer: Timer::new(Self::ANIMATION_INTERVAL, TimerMode::Once),
+        }
+    }
+}
+
+/// Update the texture to reflect changes in the animation.
+fn reset_scene_on_new_customer(
+    mut next_state: ResMut<NextState<ShopArea>>,
+    mut query: Query<(&NextCustomerTimeout)>,
+) {
+    for (animation) in &mut query {
+        if animation.changed() {
+            next_state.set(ShopArea::Storefront);
+        }
+    }
+}
+
 fn play_quest_start_voiceline(
     mut commands: Commands,
     quest_assets: Res<QuestAssets>,
@@ -187,10 +254,16 @@ fn check_npc_inventory_has_requested(mut progression: ResMut<Progression>, inv: 
     }
 }
 
-fn play_thanks_when_finished(progression: Res<Progression>, mut commands: Commands, quest_assets: Res<QuestAssets>) {
+fn play_thanks_when_finished(
+    progression: Res<Progression>,
+    mut commands: Commands,
+    quest_assets: Res<QuestAssets>,
+) {
     let stage = progression.stage;
     if progression.quests.get(stage).unwrap().finished {
-        commands.spawn_scene(voice(quest_assets.npc_voice_finsh.get(stage).unwrap().clone()));
+        commands.spawn_scene(voice(
+            quest_assets.npc_voice_finsh.get(stage).unwrap().clone(),
+        ));
     }
 }
 
@@ -198,10 +271,12 @@ fn fill_initial_npc_inv(mut progression: ResMut<Progression>, mut npc_inv: ResMu
     let stage = progression.stage;
     let quest = progression.quests.get(stage).unwrap();
 
-    if !quest.started && ! quest.finished {
+    if !quest.started && !quest.finished {
         npc_inv.contents.clear();
         for item in &quest.provides {
-            npc_inv.contents.push((ElementOrItem::Item(item.clone()),usize::MAX));
+            npc_inv
+                .contents
+                .push((ElementOrItem::Item(item.clone()), usize::MAX));
         }
     }
 }
