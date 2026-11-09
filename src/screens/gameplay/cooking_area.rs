@@ -1,15 +1,21 @@
+use std::time::Duration;
+
 use bevy::{ecs::relationship::RelationshipSourceCollection, prelude::*, reflect::display};
 
 use crate::{
     audio::{music, sound_effect},
     game::{
+        alchemy::Element,
         animation::FireAnimation,
         fire_scene, item_scene,
         level::{LevelAssets, LevelRoot},
         on_click_cauldron_empty, on_click_stir_cauldron, on_click_toggle_fire_on_off,
-        tool_inventory::CauldronInventory,
+        tool_inventory::{CauldronInventory, ElementOrItem},
     },
-    screens::{Screen::Gameplay, gameplay::Menu, gameplay::ShopArea},
+    screens::{
+        Screen::Gameplay,
+        gameplay::{Menu, ShopArea},
+    },
 };
 
 pub(super) fn plugin(app: &mut App) {
@@ -25,6 +31,7 @@ pub(super) fn plugin(app: &mut App) {
             .run_if(resource_changed::<CauldronInventory>)
             .run_if(in_state(ShopArea::CookingArea)),
     );
+    app.add_systems(Update, update_fire_add);
     app.init_resource::<FireState>();
 }
 
@@ -81,12 +88,56 @@ pub fn cooking_area_scene(level_assets: &Res<LevelAssets>) -> impl Scene {
                 Pull
                 on(on_click_cauldron_empty)
                 @item_scene("Pull".to_string(), "Pull to flush".to_string(), level_assets.pull.clone(), level_assets.pull_highlight.clone())
+            --
+                FireAdd
         ]
     }
 }
 
 fn open_book_menu(_: On<PointerClick>, mut next_menu: ResMut<NextState<Menu>>) {
     next_menu.set(Menu::Book);
+}
+
+#[derive(Component, Reflect, Default, Clone)]
+#[reflect(Component)]
+pub struct FireAdd {
+    timer: f32,
+}
+
+fn update_fire_add(
+    mut query: Query<&mut FireAdd>,
+    fire: Res<FireState>,
+    mut cauldron: ResMut<CauldronInventory>,
+    time: Res<Time>,
+) {
+    if !fire.0 {
+        return;
+    }
+    for mut fire_add in query {
+        fire_add.timer += time.delta().as_secs_f32();
+
+        if fire_add.timer < 1.0 {
+            return;
+        }
+
+        fire_add.timer = 0.0;
+
+        let index = cauldron
+            .contents
+            .iter()
+            .position(|(name, _)| *name == ElementOrItem::Element(Element::Fire));
+
+        if let Some(i) = index {
+            if cauldron.contents[i].1 >= 10 {
+                return;
+            }
+            cauldron.contents[i].1 += 1;
+        } else {
+            cauldron
+                .contents
+                .push((ElementOrItem::Element(Element::Fire), 1))
+        }
+    }
 }
 
 fn spawn_fire(
