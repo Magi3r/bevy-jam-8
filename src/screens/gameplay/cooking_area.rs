@@ -2,20 +2,7 @@ use std::time::Duration;
 
 use bevy::{ecs::relationship::RelationshipSourceCollection, prelude::*, reflect::display};
 
-use crate::{
-    audio::{music, sound_effect},
-    game::{
-        alchemy::Element,
-        animation::FireAnimation,
-        fire_scene, item_scene,
-        level::{LevelAssets, LevelRoot},
-        on_click_cauldron_empty, on_click_stir_cauldron, on_click_toggle_fire_on_off,
-        tool_inventory::{CauldronInventory, ElementOrItem},
-    },
-    screens::{
-        Screen::Gameplay,
-        gameplay::{Menu, ShopArea},
-    },
+use crate::{ game::{alchemy::{Draggable, Element, HeldItem}, animation::FireAnimation, fire_scene, item_scene, level::{LevelAssets, LevelRoot}, on_click_cauldron_empty, on_click_stir_cauldron, on_click_toggle_fire_on_off, tool_inventory::{CauldronInventory, ElementOrItem}}, menus::Menu, screens::{Screen::Gameplay, gameplay::{ShopArea, storefront::alchemy_item_to_herb_struct}},
 };
 
 pub(super) fn plugin(app: &mut App) {
@@ -195,7 +182,7 @@ fn spawn_inventory_display(
     assets: Res<AssetServer>,
     cauldron_inv: Res<CauldronInventory>,
 ) {
-    let conatiner = commands.spawn_scene(bsn![
+    let conatiner = commands.spawn_scene(bsn!{
         #CauldronInventoryList
         CauldronInventoryList
         Node {
@@ -213,7 +200,7 @@ fn spawn_inventory_display(
         }
         DespawnOnExit<ShopArea>(ShopArea::CookingArea)
         Pickable::IGNORE
-    ]);
+    });
 
     let container_id = conatiner.id();
 
@@ -245,6 +232,11 @@ fn spawn_inventory_display(
     }
 }
 
+#[derive(Component, Reflect, Debug, Clone, Default)]
+#[reflect(Component)]
+struct ItemInCauldron(ElementOrItem, usize);
+
+
 fn update_inventory_display(
     mut commands: Commands,
     assets: Res<AssetServer>,
@@ -260,6 +252,7 @@ fn update_inventory_display(
 
             let id = commands
                 .spawn_scene(bsn! {
+                    ItemInCauldron({item.clone()}, {quantity.clone()})
                     ImageNode {image: {assets.load(item_clone.image_path())}}
                     Node {
                         justify_content: JustifyContent::Center,
@@ -274,7 +267,9 @@ fn update_inventory_display(
                     Children [
                         Text(quantity_str)
                         TextFont { font_size: px(40) }
+                        Pickable::IGNORE
                     ]
+                    on(on_click_get_item_from_cauldron)
                 })
                 .id();
 
@@ -282,3 +277,37 @@ fn update_inventory_display(
         }
     }
 }
+
+fn on_click_get_item_from_cauldron(event: On<PointerClick>, mut held_item: ResMut<HeldItem>, mut inv: ResMut<CauldronInventory>, mut item_in_cauldron: Query<&mut ItemInCauldron>, mut commands: Commands,) {
+    if held_item.entity.is_none() {
+        if let Ok(ItemInCauldron(ElementOrItem::Item(item),_ )) = item_in_cauldron.get(event.entity) {
+            let item_struct = alchemy_item_to_herb_struct(item);
+            let id = commands
+                .spawn_scene(bsn! {
+                    Draggable
+                    Sprite {image: {item_struct.get_on_click_path.clone()} }
+                    Transform::from_xyz(0.,0.,50.).with_scale((0.2,0.2,1.0).into())
+                })
+                .id();
+            held_item.entity = Some(id);
+            held_item.item = Some(item.clone());
+            let mut i= 0;
+            let mut remove = None;
+            for (cont, quant) in &mut inv.contents {
+                if *cont == ElementOrItem::Item(item.clone()) {
+                    if *quant -1 == 0 {
+                        remove = Some(i);
+                    } else {
+                        *quant  -= 1;
+                    }
+                }
+                i+=1;
+            }
+            if let Some(remove) = remove {
+                inv.contents.remove(remove);
+            }
+
+        }
+    }
+}
+

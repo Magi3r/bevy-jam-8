@@ -10,6 +10,8 @@ use crate::{
     game::{
         alchemy::{AlchemyEffect, AlchemyItems},
         level::LevelAssets,
+        progression,
+        tool_inventory::{ElementOrItem, NPCInventory},
     },
     screens::{
         Screen::Gameplay,
@@ -27,6 +29,8 @@ pub(super) fn plugin(app: &mut App) {
     app.add_observer(remove_textbox);
     #[cfg(feature = "dev")]
     app.add_systems(OnEnter(Gameplay), debug_dump_progression);
+    app.add_systems(Update, check_npc_inventory_has_requested.run_if(in_state(Gameplay)).run_if(resource_changed::<NPCInventory>));
+    app.add_systems(Update, (play_thanks_when_finished, fill_initial_npc_inv).run_if(in_state(Gameplay)).run_if(resource_exists::<Progression>.and_then(resource_changed::<Progression>)));
 }
 
 fn debug_dump_progression(
@@ -164,6 +168,41 @@ fn remove_textbox(
 ) {
     for entity in textbox {
         commands.entity(entity).despawn();
+    }
+}
+
+fn check_npc_inventory_has_requested(mut progression: ResMut<Progression>, inv: Res<NPCInventory>) {
+    let stage = progression.stage;
+    let mut quest = progression.quests.get_mut(stage).unwrap();
+    match &quest.requests {
+        NpcRequests::Item(alchemy_items) => {
+            if inv
+                .contents
+                .contains(&(ElementOrItem::Item(alchemy_items.clone()), 1))
+            {
+                quest.finished = true;
+            }
+        }
+        _ => {}
+    }
+}
+
+fn play_thanks_when_finished(progression: Res<Progression>, mut commands: Commands, quest_assets: Res<QuestAssets>) {
+    let stage = progression.stage;
+    if progression.quests.get(stage).unwrap().finished {
+        commands.spawn_scene(voice(quest_assets.npc_voice_finsh.get(stage).unwrap().clone()));
+    }
+}
+
+fn fill_initial_npc_inv(mut progression: ResMut<Progression>, mut npc_inv: ResMut<NPCInventory>) {
+    let stage = progression.stage;
+    let quest = progression.quests.get(stage).unwrap();
+
+    if !quest.started && ! quest.finished {
+        npc_inv.contents.clear();
+        for item in &quest.provides {
+            npc_inv.contents.push((ElementOrItem::Item(item.clone()),usize::MAX));
+        }
     }
 }
 

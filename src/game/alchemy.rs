@@ -5,10 +5,8 @@ use std::collections::HashMap;
 
 use crate::{
     game::{
-        level::LevelAssets,
-        tool_inventory::{CauldronInventory, ElementOrItem, MortarInventory},
-    },
-    screens::{
+        level::LevelAssets, progression::Npc, tool_inventory::{CauldronInventory, ElementOrItem, MortarInventory, NPCInventory},
+    }, screens::{
         Screen::Gameplay,
         gameplay::{
             cooking_area::{Cauldron, Fire, FireState},
@@ -101,8 +99,9 @@ impl Ingredient {
     }
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord, Hash, Reflect, Default)]
 pub enum Element {
+    #[default]
     Metal,
     Life,
     Water,
@@ -181,6 +180,8 @@ fn on_click_do_something_with_item(
     mut mortar_inventory: ResMut<MortarInventory>,
     cauldron: Query<&Cauldron>,
     mut cauldron_inventory: ResMut<CauldronInventory>,
+    npc: Query<&Npc>,
+    mut npc_inventory: ResMut<NPCInventory>,
 ) {
     // get item
     if held_item.entity.is_none() {
@@ -189,7 +190,7 @@ fn on_click_do_something_with_item(
                 .spawn_scene(bsn! {
                     Draggable
                     Sprite {image: {clicked_entity_item.1.clone()} }
-                    Transform::from_xyz(0.,0.,50.).with_scale((0.5,0.5,1.0).into())
+                    Transform::from_xyz(0.,0.,50.).with_scale((0.2,0.2,1.0).into())
                 })
                 .id();
             held_item.entity = Some(id);
@@ -203,7 +204,7 @@ fn on_click_do_something_with_item(
             let entity = event.entity;
             // destroy if click on fire
             if fire.get(entity).is_ok() && fire_state.0 {
-                println!("Fire!");
+                debug!("Fire!");
                 commands.entity(held_entity).despawn();
                 held_item.entity = None;
                 held_item.item = None;
@@ -212,14 +213,14 @@ fn on_click_do_something_with_item(
             if let Ok(inventory) = get_on_click.get(entity)
                 && inventory.0 == *held_item_item
             {
-                println!("Same Item!");
+                debug!("Same Item!");
                 commands.entity(held_entity).despawn();
                 held_item.entity = None;
                 held_item.item = None;
             }
             // do something if on mortar
             if mortar.get(event.entity).is_ok() {
-                println!("Mortar!");
+                debug!("Mortar!");
                 commands.entity(held_entity).despawn();
                 held_item.entity = None;
                 held_item.item = None;
@@ -237,7 +238,7 @@ fn on_click_do_something_with_item(
             }
             // do something if on cauldron
             if cauldron.get(event.entity).is_ok() {
-                println!("Cauldron!");
+                debug!("Cauldron!");
                 commands.entity(held_entity).despawn();
                 held_item.entity = None;
                 held_item.item = None;
@@ -249,6 +250,24 @@ fn on_click_do_something_with_item(
                     item.1 += 1
                 } else {
                     cauldron_inventory
+                        .contents
+                        .push((ElementOrItem::Item(held_item_item.clone()), 1));
+                }
+            }
+            // do something if on npc
+            if npc.get(event.entity).is_ok() {
+                debug!("NPC!");
+                commands.entity(held_entity).despawn();
+                held_item.entity = None;
+                held_item.item = None;
+                if let Some(item) = npc_inventory
+                    .contents
+                    .iter_mut()
+                    .find(|item| item.0 == ElementOrItem::Item(held_item_item.clone()))
+                {
+                    item.1 += 1
+                } else {
+                    npc_inventory
                         .contents
                         .push((ElementOrItem::Item(held_item_item.clone()), 1));
                 }
