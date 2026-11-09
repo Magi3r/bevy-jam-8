@@ -245,20 +245,56 @@ fn on_click_do_something_with_item(
             }
             // do something if on cauldron
             if cauldron.get(event.entity).is_ok() {
-                debug!("Cauldron!");
-                commands.entity(held_entity).despawn();
-                held_item.entity = None;
-                held_item.item = None;
-                if let Some(item) = cauldron_inventory
-                    .contents
-                    .iter_mut()
-                    .find(|item| item.0 == ElementOrItem::Item(held_item_item.clone()))
-                {
-                    item.1 += 1
-                } else {
-                    cauldron_inventory
+                // get liquid if have flask
+                if held_item_item.clone() == AlchemyItems::Flask {
+                    println!("Water");
+                    if let Some(item) = cauldron_inventory
                         .contents
-                        .push((ElementOrItem::Item(held_item_item.clone()), 1));
+                        .iter_mut()
+                        .find(|item| item.0 == ElementOrItem::Fluid(AlchemyFluid::BasicPotion))
+                    // FIXME: Not hardcoding please
+                    {
+                        // take out fluid
+                         if item.1 -1 == 0 {
+                            // TODO: remove completely
+                        } else {
+                            item.1 -= 1
+                        }
+                        *held_item_item = AlchemyItems::BasicPotion;
+                    } else if let Some(item) = cauldron_inventory
+                        .contents
+                        .iter_mut()
+                        .find(|item| item.0 == ElementOrItem::Fluid(AlchemyFluid::HealthPotion))
+                    // FIXME: Not hardcoding please
+                    {
+                        // take out fluid
+                        if item.1 -1 == 0 {
+                            // TODO:  remove completely
+                        } else {
+                            item.1 -= 1
+                        }
+                        *held_item_item = AlchemyItems::HealthPotion;
+                    }{
+                        cauldron_inventory
+                            .contents
+                            .push((ElementOrItem::Item(held_item_item.clone()), 1));
+                    }
+                } else {
+                    debug!("Cauldron!");
+                    commands.entity(held_entity).despawn();
+                    held_item.entity = None;
+                    held_item.item = None;
+                    if let Some(item) = cauldron_inventory
+                        .contents
+                        .iter_mut()
+                        .find(|item| item.0 == ElementOrItem::Item(held_item_item.clone()))
+                    {
+                        item.1 += 1
+                    } else {
+                        cauldron_inventory
+                            .contents
+                            .push((ElementOrItem::Item(held_item_item.clone()), 1));
+                    }
                 }
             }
             // do something if on npc
