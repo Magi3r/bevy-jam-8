@@ -3,7 +3,14 @@ use bevy::prelude::*;
 use crate::game::alchemy::{
     AlchemyFluid, AlchemyItems,
     Element::{self, Stone},
+    Ingredient,
 };
+
+pub enum Inventory {
+    CauldronInventory,
+    MortarInventory,
+    NPCInventory,
+}
 
 #[derive(Resource, Clone)]
 pub struct CauldronInventory {
@@ -50,6 +57,16 @@ pub enum ElementOrItem {
 impl Default for ElementOrItem {
     fn default() -> Self {
         ElementOrItem::Element(Stone)
+    }
+}
+
+impl ElementOrItem {
+    pub fn as_element_or_item(&self) -> Ingredient {
+        match self {
+            Self::Item(items) => Ingredient::Alchemy(items.clone()),
+            Self::Fluid(fluid) => Ingredient::Fluid(fluid.clone()),
+            Self::Element(elem) => Ingredient::Element(elem.clone()),
+        }
     }
 }
 

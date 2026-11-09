@@ -6,7 +6,7 @@ use bevy::{
 use crate::{
     audio::sound_effect,
     game::{
-        alchemy::{AlchemyItems, HeldItem},
+        alchemy::{AlchemyItems, HeldItem, RecipeBook, Tool, process_recipes},
         animation::{CauldronAnimation, FireAnimation, MortarAnimation, StirerAnimation},
         level::{CauldronAmbienceSFX, FireAmbienceSFX, LevelAssets},
         tool_inventory::{CauldronInventory, ElementOrItem, MortarInventory, NPCInventory},
@@ -245,6 +245,8 @@ pub fn on_click_stir_cauldron(
     stirer: Query<Entity, (With<Stirer>, Without<StirerAnimation>)>,
     cauldron_animation: Query<&CauldronAnimation>,
     level_assets: If<Res<LevelAssets>>,
+    mut inventory: ResMut<CauldronInventory>,
+    mut recipes: If<ResMut<Assets<RecipeBook>>>,
     mut commands: Commands,
 ) {
     // do not start stiring if cauldron animation already running
@@ -252,10 +254,18 @@ pub fn on_click_stir_cauldron(
         return;
     }
     if let Ok(stirer) = stirer.single() {
+        let cloned_assets = level_assets.clone();
+        process_recipes(
+            Tool::Cauldron,
+            &mut inventory.contents,
+            recipes,
+            level_assets,
+        );
+
         commands
             .entity(stirer)
             .insert_if_new(StirerAnimation::new());
-        commands.spawn_scene(sound_effect(level_assets.cauldron_stir_sfx.clone()));
+        commands.spawn_scene(sound_effect(cloned_assets.cauldron_stir_sfx.clone()));
     }
 }
 
@@ -264,11 +274,15 @@ pub fn on_click_morter(
     mortar: Query<Entity, (With<Mortar>, Without<MortarAnimation>)>,
     level_assets: If<Res<LevelAssets>>,
     held_item: Res<HeldItem>,
+    mut inventory: ResMut<MortarInventory>,
+    mut recipes: If<ResMut<Assets<RecipeBook>>>,
     mut commands: Commands,
 ) {
     // ignore click when item in hand
     if held_item.entity.is_none() {
         if let Ok(mortar) = mortar.single() {
+            process_recipes(Tool::Mortar, &mut inventory.contents, recipes, level_assets);
+
             commands
                 .entity(mortar)
                 .insert_if_new(MortarAnimation::new());

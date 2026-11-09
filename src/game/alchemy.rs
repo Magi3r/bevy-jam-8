@@ -7,7 +7,9 @@ use crate::{
     game::{
         level::LevelAssets,
         progression::Npc,
-        tool_inventory::{CauldronInventory, ElementOrItem, MortarInventory, NPCInventory},
+        tool_inventory::{
+            CauldronInventory, ElementOrItem, Inventory, MortarInventory, NPCInventory,
+        },
     },
     screens::{
         Screen::Gameplay,
@@ -42,7 +44,7 @@ fn debug_dump_recipebook(level_assets: If<Res<LevelAssets>>, recipes: If<Res<Ass
     println!("{:?}", &recipes);
 }
 
-#[derive(Asset, TypePath, Serialize, Deserialize, Debug)]
+#[derive(Asset, TypePath, Serialize, Deserialize, Debug, DerefMut, Deref)]
 pub struct RecipeBook(pub Vec<Recipe>);
 
 /// Index structure to see whether a combination of ingredients with the quantities is a registered recipe.
@@ -292,6 +294,68 @@ fn update_held_item_pos(
                 for mut transfrom in item {
                     transfrom.translation.x = world_position.x;
                     transfrom.translation.y = world_position.y;
+                }
+            }
+        }
+    }
+}
+
+pub fn process_recipes(
+    tool: Tool,
+    inventory: &mut Vec<(ElementOrItem, usize)>,
+    mut recipes: If<ResMut<Assets<RecipeBook>>>,
+    level_assets: If<Res<LevelAssets>>,
+) {
+    if let Some(recipes) = &mut recipes.0.get_mut(&level_assets.0.recipes) {
+        for recipe in recipes.iter_mut() {
+            if recipe.uses != tool {
+                continue;
+            }
+
+            let mut all_available = true;
+            for (ingredient, quantity) in &recipe.ingredients {
+                let index = inventory
+                    .iter()
+                    .position(|(name, _)| *name == ingredient.as_element_or_item());
+
+                if let Some(i) = index {
+                    if inventory[i].1 < *quantity {
+                        all_available = false;
+                    }
+                } else {
+                    all_available = false;
+                    break;
+                }
+            }
+
+            if !all_available {
+                continue;
+            }
+
+            for (ingredient, quantity) in &recipe.ingredients {
+                let index = inventory
+                    .iter()
+                    .position(|(name, _)| *name == ingredient.as_element_or_item());
+
+                if let Some(i) = index {
+                    inventory[i].1 -= quantity;
+                    if inventory[i].1 == 0 {
+                        inventory.remove(i);
+                    }
+                }
+            }
+
+            recipe.discovered = true;
+
+            for (product, quantity) in &recipe.produces {
+                let index = inventory
+                    .iter()
+                    .position(|(name, _)| *name == product.as_element_or_item());
+
+                if let Some(i) = index {
+                    inventory[i].1 += quantity;
+                } else {
+                    inventory.push((product.as_element_or_item(), *quantity));
                 }
             }
         }

@@ -88,8 +88,8 @@
             (Alchemy(JellyPowder), 1)
         ],
         produces: [
-            (Element(Life), 5),
-            (Element(Soul), 1)
+            (Element(Life), 1),
+            (Element(Soul), 3)
         ],
         uses: Cauldron,
         discovered: true,
