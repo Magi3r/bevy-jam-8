@@ -105,7 +105,7 @@ impl ElementOrItem {
             },
             Self::Fluid(fluid) => match fluid {
                 AlchemyFluid::BasicPotion => "images/icons/Takeout.png",
-                AlchemyFluid::HealthPotion => "images/icons/Takeout.png",
+                AlchemyFluid::HealthPotion => "images/icons/TakeoutRed.png",
             },
         }
     }

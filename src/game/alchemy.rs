@@ -368,6 +368,8 @@ pub fn process_recipes(
                 continue;
             }
 
+            println!("{}", recipe.name);
+
             for (ingredient, quantity) in &recipe.ingredients {
                 let index = inventory
                     .iter()

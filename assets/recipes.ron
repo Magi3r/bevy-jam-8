@@ -72,6 +72,18 @@
 
     // Cauldron
     (
+        name: "Health Potion",
+        ingredients: [
+            (Fluid(BasicPotion), 1),
+            (Element(Life), 3)
+        ],
+        produces: [
+            (Fluid(HealthPotion), 1),
+        ],
+        uses: Cauldron,
+        discovered: true,
+    ),
+    (
         name: "Boil Jelly Nettle",
         ingredients: [
             (Alchemy(JellyNettle), 1)
@@ -146,18 +158,6 @@
         ],
         produces: [
             (Fluid(BasicPotion), 1),
-        ],
-        uses: Cauldron,
-        discovered: true,
-    ),
-    (
-        name: "Health Potion",
-        ingredients: [
-            (Alchemy(BasicPotion), 1),
-            (Element(Life), 3)
-        ],
-        produces: [
-            (Fluid(HealthPotion), 1),
         ],
         uses: Cauldron,
         discovered: true,

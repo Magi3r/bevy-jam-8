@@ -19,7 +19,7 @@ Quest (
     npc_asset: "images/npc/Kid.png",
     npc_voice_start: "audio/sound_effects/VoiceLinesCrunch/Part1_Child_Crushed.wav",
     npc_text_start: "You there. I have heard you can do magic. Can you show me a big explosion? ",
-    npc_voice_finish: "audio/sound_effects/VoiceLinesCrunch/Part1_Child_Crushed.wav",
+    npc_voice_finish: "audio/sound_effects/VoiceLinesCrunch/Part2_Child_Crushed.wav",
     npc_text_finish: "Waow, that was amazing. I'm gonna tell all my friends about it.",
     unlocks: [],
     provides: [],
