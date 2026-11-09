@@ -9,6 +9,7 @@ use crate::{
         progression::{Npc, Progression, QuestAssets, on_click_play_quest_start_voiceline},
         tool_inventory::{MortarInventory, NPCInventory},
     },
+    menus::Menu,
     screens::{Screen::Gameplay, gameplay::ShopArea},
 };
 
@@ -63,6 +64,8 @@ pub fn storefront_scene(
                 on(on_click_morter)
                 @item_scene("Mortar".to_string(), "Grind stuff into other stuff".to_string(), level_assets.mortar.first().unwrap().clone(), level_assets.mortar_highlight.clone())
             --
+                #Book
+                on(open_book_menu)
                 @item_scene("Book".to_string(), "Study discovered recipes".to_string(), level_assets.book_storefront.clone(), level_assets.book_highlight_storefront.clone())
             --
                 @item_scene("Flasks".into(), "Holds one standard unit of potion.".into(), level_assets.flask.clone(), level_assets.flask_highlight.clone())
@@ -79,6 +82,10 @@ pub fn storefront_scene(
                 Transform::from_xyz(0.,0.,-0.5)
         ]
     }
+}
+
+fn open_book_menu(_: On<PointerClick>, mut next_menu: ResMut<NextState<Menu>>) {
+    next_menu.set(Menu::Book);
 }
 
 fn spawn_level(

@@ -15,6 +15,7 @@ pub mod storefront;
 pub enum ShopArea {
     Storefront,
     CookingArea,
+    Book,
     #[default]
     TransitionAnimation,
 }
@@ -25,6 +26,7 @@ impl ShopArea {
             ShopArea::Storefront => Some(ShopArea::CookingArea),
             ShopArea::CookingArea => None,
             ShopArea::TransitionAnimation => None,
+            ShopArea::Book => None,
         }
     }
 
@@ -33,6 +35,7 @@ impl ShopArea {
             ShopArea::Storefront => None,
             ShopArea::CookingArea => Some(ShopArea::Storefront),
             ShopArea::TransitionAnimation => None,
+            ShopArea::Book => None,
         }
     }
 }

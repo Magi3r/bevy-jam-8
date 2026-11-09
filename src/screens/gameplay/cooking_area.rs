@@ -9,7 +9,7 @@ use crate::{
         on_click_cauldron_empty, on_click_stir_cauldron, on_click_toggle_fire_on_off,
         tool_inventory::CauldronInventory,
     },
-    screens::{Screen::Gameplay, gameplay::ShopArea},
+    screens::{Screen::Gameplay, gameplay::Menu, gameplay::ShopArea},
 };
 
 pub(super) fn plugin(app: &mut App) {
@@ -74,6 +74,7 @@ pub fn cooking_area_scene(level_assets: &Res<LevelAssets>) -> impl Scene {
                 Transform::from_xyz(0.0,0.0,2.0)
             --
                 #Book
+                on(open_book_menu)
                 @item_scene("Book".to_string(), "Study discovered recipes".to_string(), level_assets.book_cooking_area.clone(), level_assets.book_highlight_cooking_area.clone())
             --
                 #Pull
@@ -82,6 +83,10 @@ pub fn cooking_area_scene(level_assets: &Res<LevelAssets>) -> impl Scene {
                 @item_scene("Pull".to_string(), "Pull to flush".to_string(), level_assets.pull.clone(), level_assets.pull_highlight.clone())
         ]
     }
+}
+
+fn open_book_menu(_: On<PointerClick>, mut next_menu: ResMut<NextState<Menu>>) {
+    next_menu.set(Menu::Book);
 }
 
 fn spawn_fire(

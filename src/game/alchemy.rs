@@ -77,11 +77,11 @@ impl RecipeIndex {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Recipe {
-    name: String,
-    ingredients: Vec<(Ingredient, usize)>,
-    produces: Vec<(Ingredient, usize)>,
-    uses: Tool,
-    discovered: bool,
+    pub name: String,
+    pub ingredients: Vec<(Ingredient, usize)>,
+    pub produces: Vec<(Ingredient, usize)>,
+    pub uses: Tool,
+    pub discovered: bool,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -89,6 +89,16 @@ pub enum Ingredient {
     Alchemy(AlchemyItems),
     Fluid(AlchemyFluid),
     Element(Element),
+}
+
+impl Ingredient {
+    pub fn as_element_or_item(&self) -> ElementOrItem {
+        match self {
+            Self::Alchemy(items) => ElementOrItem::Item(items.clone()),
+            Self::Fluid(fluid) => ElementOrItem::Fluid(fluid.clone()),
+            Self::Element(elem) => ElementOrItem::Element(elem.clone()),
+        }
+    }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord, Hash)]

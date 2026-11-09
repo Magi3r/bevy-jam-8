@@ -78,8 +78,8 @@ impl ElementOrItem {
                 AlchemyItems::Cheese => "images/items/Cheese.png",
             },
             Self::Fluid(fluid) => match fluid {
-                AlchemyFluid::BasicPotion => "assets/images/icons/Takeout.png",
-                AlchemyFluid::HealthPotion => "assets/images/icons/Takeout.png",
+                AlchemyFluid::BasicPotion => "images/icons/Takeout.png",
+                AlchemyFluid::HealthPotion => "images/icons/Takeout.png",
             },
         }
     }
