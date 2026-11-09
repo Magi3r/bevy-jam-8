@@ -48,6 +48,7 @@ pub(super) fn plugin(app: &mut App) {
                 (
                     update_stirer_animation_sprite,
                     remove_component_when_animation_finished,
+                    remove_component_when_explosion_animation_finished,
                 )
                     .chain()
                     .run_if(in_state(ShopArea::CookingArea)),
@@ -140,12 +141,19 @@ impl Explostion {
         if !self.timer.is_finished() {
             return;
         }
-        self.frame = (self.frame + 1) % Self::ANIMATION_FRAMES;
+        self.frame = (self.frame + 1);
+        if self.frame >= Self::ANIMATION_FRAMES - 1 {
+            self.frame = Self::ANIMATION_FRAMES - 1;
+        }
     }
 
     /// Whether animation changed this tick.
     pub fn changed(&self) -> bool {
         self.timer.is_finished()
+    }
+
+    pub fn is_finished(&self) -> bool {
+        return self.frame >= Self::ANIMATION_FRAMES - 1;
     }
 
     pub(crate) fn new() -> Self {
@@ -163,7 +171,23 @@ fn update_explosion_sprite(
 ) {
     for (animation, mut sprite) in &mut query {
         if animation.changed() {
-            sprite.image = level_assets.fire.get(animation.frame).unwrap().clone();
+            sprite.image = level_assets
+                .cauldron_explosion
+                .get(animation.frame)
+                .unwrap()
+                .clone();
+        }
+    }
+}
+
+fn remove_component_when_explosion_animation_finished(
+    transitions: Query<(Entity, &Explostion)>,
+    mut commands: Commands,
+) {
+    for (entity, anim) in transitions {
+        if anim.is_finished() {
+            commands.entity(entity).remove::<Explostion>();
+            commands.entity(entity).insert(Visibility::Hidden);
         }
     }
 }

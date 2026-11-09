@@ -66,7 +66,7 @@
         produces: [
             (Alchemy(OrbClear), 1)
         ],
-        uses: Mortar,
+        uses: Cauldron,
         discovered: false,
     ),
 
@@ -88,7 +88,6 @@
             (Alchemy(JellyPowder), 1)
         ],
         produces: [
-            (Element(Life), 1),
             (Element(Soul), 3)
         ],
         uses: Cauldron,
@@ -111,7 +110,6 @@
             (Alchemy(SunflowerPowder), 1)
         ],
         produces: [
-            (Element(Life), 3),
             (Element(Fire), 1)
         ],
         uses: Cauldron,
@@ -134,7 +132,6 @@
             (Alchemy(IcyPowder), 1)
         ],
         produces: [
-            (Element(Life), 3),
             (Element(Ice), 1)
         ],
         uses: Cauldron,

@@ -17,7 +17,7 @@ fn spawn_main_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
         GlobalZIndex(2)
         DespawnOnExit<Menu>(Menu::Main)
         Children [
-            @widget::title_label("Alchemist")
+            @widget::title_label("Seven Element Alchemist")
             --
             @widget::button("Play", enter_loading_or_gameplay_screen, button_image.clone(), highlight.clone())
             --

@@ -4,8 +4,8 @@ use bevy::{ecs::relationship::RelationshipSourceCollection, prelude::*, reflect:
 
 use crate::{
     game::{
-        alchemy::{Draggable, Element, HeldItem},
-        animation::FireAnimation,
+        alchemy::{AlchemyItems, Draggable, Element, HeldItem},
+        animation::{Explostion, FireAnimation},
         fire_scene, item_scene,
         level::{LevelAssets, LevelRoot},
         on_click_cauldron_empty, on_click_stir_cauldron, on_click_toggle_fire_on_off,
@@ -32,7 +32,7 @@ pub(super) fn plugin(app: &mut App) {
     );
     app.add_systems(
         Update,
-        update_inventory_display
+        (update_inventory_display, check_for_explosion)
             .run_if(resource_changed::<CauldronInventory>)
             .run_if(in_state(ShopArea::CookingArea)),
     );
@@ -56,6 +56,9 @@ struct CookingAreaScene;
 
 #[derive(Resource, Reflect)]
 pub struct FireState(pub bool);
+
+#[derive(Component, Default, Clone)]
+struct ExplosionContainer;
 
 impl FromWorld for FireState {
     fn from_world(_world: &mut World) -> Self {
@@ -95,6 +98,12 @@ pub fn cooking_area_scene(level_assets: &Res<LevelAssets>) -> impl Scene {
                 @item_scene("Pull".to_string(), "Pull to flush".to_string(), level_assets.pull.clone(), level_assets.pull_highlight.clone())
             --
                 FireAdd
+            --
+                #ExplosionContainer
+                ExplosionContainer
+                Sprite
+                Visibility::Hidden
+                Transform::from_xyz(0.0,0.0,2.0)
         ]
     }
 }
@@ -330,6 +339,30 @@ fn on_click_get_item_from_cauldron(
             if let Some(remove) = remove {
                 inv.contents.remove(remove);
             }
+        }
+    }
+}
+
+fn check_for_explosion(
+    mut commands: Commands,
+    assets: Res<AssetServer>,
+    mut cauldron_inv: ResMut<CauldronInventory>,
+    explosion_container: Query<Entity, (With<ExplosionContainer>, Without<Explostion>)>,
+) {
+    for (thing, count) in cauldron_inv.contents.clone() {
+        if count >= 20 {
+            if let Ok(explosion_container) = explosion_container.single() {
+                commands
+                    .entity(explosion_container)
+                    .insert_if_new(Explostion::new());
+                commands
+                    .entity(explosion_container)
+                    .insert(Visibility::Visible);
+            }
+            *cauldron_inv = CauldronInventory::default();
+            cauldron_inv
+                .contents
+                .push((ElementOrItem::Item(AlchemyItems::PhilosopherStone), 1))
         }
     }
 }
