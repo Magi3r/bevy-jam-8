@@ -9,7 +9,7 @@ Quest (
     npc_text_finish: "Thank you, kind witch. I will tell of your deeds where ever I go.",
     unlocks: [JellyNettle, Sunflower, IcyLilly],
     provides: [JellyNettle, Sunflower, IcyLilly],
-    requests: Item(HealthPotion),
+    requests: Item(Flask),
     started: false,
     finished: false
 ),
