@@ -156,6 +156,15 @@ pub enum AlchemyFluid {
     HealthPotion,
 }
 
+impl AlchemyFluid {
+    fn to_item(&self) -> AlchemyItems {
+        match self {
+            AlchemyFluid::BasicPotion => AlchemyItems::BasicPotion,
+            AlchemyFluid::HealthPotion => AlchemyItems::HealthPotion,
+        }
+    }
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize, Reflect)]
 pub enum AlchemyEffect {
     Explosion,
@@ -192,6 +201,7 @@ fn on_click_do_something_with_item(
 ) {
     // get item
     if held_item.entity.is_none() {
+        println!("Get item");
         if let Ok(clicked_entity_item) = get_on_click.get(event.entity) {
             let id = commands
                 .spawn_scene(bsn! {
@@ -248,37 +258,26 @@ fn on_click_do_something_with_item(
                 // get liquid if have flask
                 if held_item_item.clone() == AlchemyItems::Flask {
                     println!("Water");
-                    if let Some(item) = cauldron_inventory
+                    if let Some(index) = cauldron_inventory
                         .contents
-                        .iter_mut()
-                        .find(|item| item.0 == ElementOrItem::Fluid(AlchemyFluid::BasicPotion))
-                    // FIXME: Not hardcoding please
-                    {
-                        // take out fluid
-                         if item.1 -1 == 0 {
-                            // TODO: remove completely
-                        } else {
-                            item.1 -= 1
+                        .iter()
+                        .position(|(element, _)| matches!(element, ElementOrItem::Fluid(_))) {
+
+                            let mut should_remove = None;
+                            if let (ElementOrItem::Fluid(fluid), quantity) =
+                                cauldron_inventory.contents.get_mut(index).unwrap()
+                            {
+                                // take out fluid
+                                *quantity -= 1;
+                                if *quantity == 0 {
+                                    should_remove = Some(index)
+                                }
+                                *held_item_item = fluid.to_item();
+                            }
+                            if let Some(should_remove) = should_remove {
+                                cauldron_inventory.contents.remove(should_remove);
+                            }
                         }
-                        *held_item_item = AlchemyItems::BasicPotion;
-                    } else if let Some(item) = cauldron_inventory
-                        .contents
-                        .iter_mut()
-                        .find(|item| item.0 == ElementOrItem::Fluid(AlchemyFluid::HealthPotion))
-                    // FIXME: Not hardcoding please
-                    {
-                        // take out fluid
-                        if item.1 -1 == 0 {
-                            // TODO:  remove completely
-                        } else {
-                            item.1 -= 1
-                        }
-                        *held_item_item = AlchemyItems::HealthPotion;
-                    }{
-                        cauldron_inventory
-                            .contents
-                            .push((ElementOrItem::Item(held_item_item.clone()), 1));
-                    }
                 } else {
                     debug!("Cauldron!");
                     commands.entity(held_entity).despawn();
@@ -297,6 +296,7 @@ fn on_click_do_something_with_item(
                     }
                 }
             }
+
             // do something if on npc
             if npc.get(event.entity).is_ok() {
                 debug!("NPC!");

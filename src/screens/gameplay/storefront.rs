@@ -180,11 +180,11 @@ pub fn alchemy_item_to_herb_struct(item: &AlchemyItems) -> HerbStruct {
         },
         AlchemyItems::SunflowerPowder => HerbStruct {
             get_on_click_item: SunflowerPowder,
-            get_on_click_path: "images/items/SunflowerPowder.png".into(),
+            get_on_click_path: "images/items/SunPowder.png".into(),
             name: "Sunflower Powder".into(),
             desc: "Hot herbal powder.".into(),
-            path: "images/foreground/SunflowerPowder.png".into(),
-            highlight_path: "images/highlight/SunflowerPowder.png".into(),
+            path: "images/foreground/SunPowder.png".into(),
+            highlight_path: "images/highlight/SunPowder.png".into(),
         },
         AlchemyItems::HealthPotion => HerbStruct {
             get_on_click_item: HealthPotion,

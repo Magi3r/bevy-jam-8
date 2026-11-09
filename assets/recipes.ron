@@ -151,7 +151,7 @@
             (Fluid(BasicPotion), 1),
         ],
         uses: Cauldron,
-        discovered: false,
+        discovered: true,
     ),
     (
         name: "Health Potion",
@@ -163,7 +163,7 @@
             (Fluid(HealthPotion), 1),
         ],
         uses: Cauldron,
-        discovered: false,
+        discovered: true,
     ),
     (
         name: "Eternal Snow",
