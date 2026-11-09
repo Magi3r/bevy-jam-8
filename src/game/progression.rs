@@ -8,10 +8,7 @@ use tracing::Level;
 
 use crate::{
     AppSystems::TickTimers, asset_tracking::LoadResource, audio::{Voice, voice}, game::{
-        alchemy::{AlchemyEffect, AlchemyItems},
-        level::LevelAssets,
-        progression,
-        tool_inventory::{ElementOrItem, NPCInventory},
+        alchemy::{AlchemyEffect::{self, Explosion}, AlchemyItems}, animation::Explostion, level::LevelAssets, progression, tool_inventory::{ElementOrItem, NPCInventory},
     }, screens::{
         Screen::Gameplay,
         gameplay::ShopArea::{self, Storefront},
@@ -42,6 +39,7 @@ pub(super) fn plugin(app: &mut App) {
             .run_if(resource_exists::<Progression>.and_then(resource_changed::<Progression>)),
     );
     app.add_observer(progress_to_next_stage);
+    app.add_observer(trigger_explosion_progress);
 }
 
 fn debug_dump_progression(
@@ -123,6 +121,14 @@ impl QuestAssets {
             npc_voice_start,
             npc_voice_finsh,
         }
+    }
+}
+
+fn trigger_explosion_progress(_: On<Remove<Explostion>>, mut progression: ResMut<Progression>) {
+    let stage = progression.stage;
+    let mut quest = progression.quests.get_mut(stage).unwrap();
+    if matches!(quest.requests, NpcRequests::Effect(Explosion)) {
+        quest.finished = true;
     }
 }
 
