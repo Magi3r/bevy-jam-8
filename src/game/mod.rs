@@ -57,9 +57,9 @@ pub(super) fn plugin(app: &mut App) {
 #[derive(Component)]
 struct Machine;
 #[derive(Component, Default, Clone)]
-struct Interactable {
-    name: String,
-    description: String,
+pub struct Interactable {
+    pub name: String,
+    pub description: String,
 }
 
 #[derive(Component, Default, Clone)]

@@ -1,13 +1,9 @@
-use bevy::{ecs::system::command, prelude::*, ui::widget};
+use bevy::{ecs::system::command, picking::hover::Hovered, prelude::*, ui::widget};
 
 use crate::{
     game::{
-        alchemy::{RecipeBook, Tool},
-        level::LevelAssets,
-    },
-    menus::Menu,
-    screens::gameplay::ShopArea,
-    theme::widget::{self as other_widget, button_small},
+        Interactable, alchemy::{RecipeBook, Tool}, level::LevelAssets, tool_inventory::ElementOrItem,
+    }, menus::Menu, screens::gameplay::{ShopArea, storefront::alchemy_item_to_herb_struct}, theme::widget::{self as other_widget, button_small},
 };
 
 pub(super) fn plugin(app: &mut App) {
@@ -26,7 +22,7 @@ fn spawn_book(
     let button_image = asset_server.load("images/gui/ButtonSmall.png");
     let highlight = asset_server.load("images/gui/ButtonSmall_Highlight.png");
 
-    let book = commands.spawn_scene(bsn![
+    let book = commands.spawn_scene(bsn!{
         Transform::from_xyz(0.0,0.0,30.0)
             #BookRecipeList
             Node {
@@ -55,7 +51,7 @@ fn spawn_book(
                 }
                 Pickable::IGNORE
             ]
-    ]);
+});
     //
     //     let book_container_id = book.id();
     //
@@ -184,7 +180,7 @@ fn spawn_recipes(
 ) {
     let recipe_book = recipes.get(&level_assets.recipes).unwrap();
 
-    let conatiner = commands.spawn_scene(bsn![
+    let conatiner = commands.spawn_scene(bsn!{
         #RecipeList
         Node {
             position_type: PositionType::Absolute,
@@ -201,7 +197,7 @@ fn spawn_recipes(
         }
         DespawnOnExit<Menu>(Menu::Book)
         Pickable::IGNORE
-    ]);
+});
 
     let container_id = conatiner.id();
 
@@ -211,7 +207,7 @@ fn spawn_recipes(
         }
 
         let recipe_container = commands
-            .spawn_scene(bsn![
+            .spawn_scene(bsn!{
                 #RecipeList
                 Node {
                     // position_type: PositionType::Absolute,
@@ -227,7 +223,7 @@ fn spawn_recipes(
                 }
                 DespawnOnExit<Menu>(Menu::Book)
                 Pickable::IGNORE
-            ])
+    })
             .id();
 
         commands.entity(container_id).add_child(recipe_container);
@@ -235,26 +231,53 @@ fn spawn_recipes(
         for (ingredient, quantity) in &recipe.ingredients {
             let item = ingredient.as_element_or_item().clone();
             let quantity_str = quantity.to_string();
+            let id;
+            if let ElementOrItem::Item(alch_item) = &item {
+                let item_struct = alchemy_item_to_herb_struct(&alch_item);
+                id = commands
+                    .spawn_scene(bsn! {
+                        ImageNode {image: {assets.load(item.image_path())}}
+                        Hovered
+                        Pickable
+                        Interactable {name: {item_struct.name}, description: {item_struct.desc}}
+                        Node {
+                            justify_content: JustifyContent::Center,
+                            align_items: AlignItems::Center,
+                            flex_wrap: FlexWrap::Wrap,
+                            row_gap: px(2),
+                            column_gap: px(2),
+                            padding: UiRect::all(px(4)),
+                            width: px(50),
+                            height: px(50),
+                        }
+                        Children [
+                            Text(quantity_str)
+                            TextFont { font_size: px(40) }
+                        ]
+                    })
+                    .id();
 
-            let id = commands
-                .spawn_scene(bsn! {
-                    ImageNode {image: {assets.load(item.image_path())}}
-                    Node {
-                        justify_content: JustifyContent::Center,
-                        align_items: AlignItems::Center,
-                        flex_wrap: FlexWrap::Wrap,
-                        row_gap: px(2),
-                        column_gap: px(2),
-                        padding: UiRect::all(px(4)),
-                        width: px(50),
-                        height: px(50),
-                    }
-                    Children [
-                        Text(quantity_str)
-                        TextFont { font_size: px(40) }
-                    ]
-                })
-                .id();
+            }else {
+                id = commands
+                    .spawn_scene(bsn! {
+                        ImageNode {image: {assets.load(item.image_path())}}
+                        Node {
+                            justify_content: JustifyContent::Center,
+                            align_items: AlignItems::Center,
+                            flex_wrap: FlexWrap::Wrap,
+                            row_gap: px(2),
+                            column_gap: px(2),
+                            padding: UiRect::all(px(4)),
+                            width: px(50),
+                            height: px(50),
+                        }
+                        Children [
+                            Text(quantity_str)
+                            TextFont { font_size: px(40) }
+                        ]
+                    })
+                    .id();
+            }
             commands.entity(recipe_container).add_child(id);
         }
 

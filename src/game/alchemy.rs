@@ -261,23 +261,23 @@ fn on_click_do_something_with_item(
                     if let Some(index) = cauldron_inventory
                         .contents
                         .iter()
-                        .position(|(element, _)| matches!(element, ElementOrItem::Fluid(_))) {
-
-                            let mut should_remove = None;
-                            if let (ElementOrItem::Fluid(fluid), quantity) =
-                                cauldron_inventory.contents.get_mut(index).unwrap()
-                            {
-                                // take out fluid
-                                *quantity -= 1;
-                                if *quantity == 0 {
-                                    should_remove = Some(index)
-                                }
-                                *held_item_item = fluid.to_item();
+                        .position(|(element, _)| matches!(element, ElementOrItem::Fluid(_)))
+                    {
+                        let mut should_remove = None;
+                        if let (ElementOrItem::Fluid(fluid), quantity) =
+                            cauldron_inventory.contents.get_mut(index).unwrap()
+                        {
+                            // take out fluid
+                            *quantity -= 1;
+                            if *quantity == 0 {
+                                should_remove = Some(index)
                             }
-                            if let Some(should_remove) = should_remove {
-                                cauldron_inventory.contents.remove(should_remove);
-                            }
+                            *held_item_item = fluid.to_item();
                         }
+                        if let Some(should_remove) = should_remove {
+                            cauldron_inventory.contents.remove(should_remove);
+                        }
+                    }
                 } else {
                     debug!("Cauldron!");
                     commands.entity(held_entity).despawn();

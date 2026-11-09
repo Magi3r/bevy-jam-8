@@ -29,7 +29,7 @@ pub(super) fn plugin(app: &mut App) {
             spawn_inventory_display,
             update_inventory_display,
             spawn_npc_inventory_display,
-             update_npc_inventory_display
+            update_npc_inventory_display,
         )
             .chain()
             .run_if(in_state(Gameplay)),

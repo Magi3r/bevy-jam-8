@@ -7,18 +7,30 @@ use serde::{Deserialize, Serialize};
 use tracing::Level;
 
 use crate::{
-    AppSystems::TickTimers, asset_tracking::LoadResource, audio::{Voice, voice}, game::{
-        alchemy::{AlchemyEffect::{self, Explosion}, AlchemyItems}, animation::Explostion, level::LevelAssets, progression, tool_inventory::{ElementOrItem, NPCInventory},
-    }, screens::{
+    AppSystems::TickTimers,
+    asset_tracking::LoadResource,
+    audio::{Voice, voice},
+    game::{
+        alchemy::{
+            AlchemyEffect::{self, Explosion},
+            AlchemyItems,
+        },
+        animation::Explostion,
+        level::LevelAssets,
+        progression,
+        tool_inventory::{ElementOrItem, NPCInventory},
+    },
+    screens::{
         Screen::Gameplay,
         gameplay::ShopArea::{self, Storefront},
-    }, theme::palette::BLACK,
+    },
+    theme::palette::BLACK,
 };
 
 pub(super) fn plugin(app: &mut App) {
     app.init_asset::<Progression>();
     app.add_systems(Update, update_NextCustomerTimeout_timer.in_set(TickTimers));
-    app.add_systems(Update, reset_scene_on_new_customer );
+    app.add_systems(Update, reset_scene_on_new_customer);
     app.add_plugins(RonAssetPlugin::<Progression>::new(&["quests.ron"]));
     app.add_systems(OnEnter(Gameplay), init_assets);
     app.add_systems(OnEnter(Storefront), play_quest_start_voiceline);

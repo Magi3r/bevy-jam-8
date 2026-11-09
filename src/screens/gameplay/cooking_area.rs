@@ -21,7 +21,12 @@ use crate::{
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(
         OnEnter(ShopArea::CookingArea),
-        (spawn_level, spawn_fire, spawn_inventory_display, update_inventory_display)
+        (
+            spawn_level,
+            spawn_fire,
+            spawn_inventory_display,
+            update_inventory_display,
+        )
             .chain()
             .run_if(in_state(Gameplay)),
     );
