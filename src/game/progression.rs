@@ -223,9 +223,12 @@ pub fn on_click_play_quest_start_voiceline(
 ) {
     if voice_q.is_empty() {
         let stage = progression_assets.stage;
-        commands.spawn_scene(voice(
-            quest_assets.npc_voice_start.get(stage).unwrap().clone(),
-        ));
+        let quest= progression_assets.quests.get(stage).unwrap();
+        if quest.started && ! quest.finished {
+            commands.spawn_scene(voice(
+                quest_assets.npc_voice_start.get(stage).unwrap().clone(),
+            ));
+        }
     }
 }
 
