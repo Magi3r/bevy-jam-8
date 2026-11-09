@@ -21,11 +21,12 @@ use crate::{
 pub(super) fn plugin(app: &mut App) {
     app.init_asset::<Progression>();
     app.add_plugins(RonAssetPlugin::<Progression>::new(&["quests.ron"]));
-    app.add_systems(OnEnter(Gameplay), debug_dump_progression);
     app.add_systems(OnEnter(Gameplay), init_assets);
     app.add_systems(OnEnter(Storefront), play_quest_start_voiceline);
     app.add_observer(show_textbox);
     app.add_observer(remove_textbox);
+    #[cfg(feature = "dev")]
+    app.add_systems(OnEnter(Gameplay), debug_dump_progression);
 }
 
 fn debug_dump_progression(
@@ -34,7 +35,7 @@ fn debug_dump_progression(
     progression: If<Res<Assets<Progression>>>,
 ) {
     let progression = progression.0.get(&level_assets.progression);
-    println!("{:#?}", &progression);
+    debug!("{:#?}", &progression);
 }
 
 fn init_assets(

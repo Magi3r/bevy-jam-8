@@ -189,7 +189,7 @@ fn on_click_do_something_with_item(
                 .spawn_scene(bsn! {
                     Draggable
                     Sprite {image: {clicked_entity_item.1.clone()} }
-                    Transform::from_xyz(0.,0.,50.).with_scale((0.1,0.1,1.0).into())
+                    Transform::from_xyz(0.,0.,50.).with_scale((0.5,0.5,1.0).into())
                 })
                 .id();
             held_item.entity = Some(id);

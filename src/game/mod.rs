@@ -323,17 +323,17 @@ fn debug_items(
     texts: Query<&Text>,
 ) {
     for (entity, sprite, transform, hovered) in &items {
-        println!(
+        debug!(
             "Item: {:?}, image: {:?}, position: {:?}, hovered: {:?}",
             entity, sprite.image, transform.translation, hovered
         );
     }
-    println!("tooltips: {}", tooltip.iter().len());
+    debug!("tooltips: {}", tooltip.iter().len());
     for (entity, visibility, node, children) in tooltip {
         for text_id in children {
-            println!("{:?}", texts.get(*text_id).unwrap().0.clone());
+            debug!("{:?}", texts.get(*text_id).unwrap().0.clone());
         }
-        println!(
+        debug!(
             "Tooltip: {:?}, visibility: {:?}, position: {:?}, children: {:?}",
             entity,
             visibility,

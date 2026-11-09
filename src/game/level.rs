@@ -93,6 +93,7 @@ pub struct LevelAssets {
     pub cauldron_explosion: Vec<Handle<Image>>,
     #[dependency]
     pub progression: Handle<Progression>,
+
 }
 
 impl FromWorld for LevelAssets {
